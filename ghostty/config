@@ -1,0 +1,10 @@
+theme = "Mathias"
+
+macos-titlebar-style=transparent
+
+window-decoration = none
+macos-titlebar-style = hidden
+
+keybind = super+shift+l=next_tab
+keybind = super+shift+h=previous_tab
+

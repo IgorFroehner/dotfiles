@@ -1,0 +1,35 @@
+# home brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+(echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/igor/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# development requirements
+brew install coreutils curl git
+brew install gpg gawk
+
+# programming languages management
+brew install asdf
+
+# window manager and key bindings
+brew install koekeishiya/formulae/yabai
+brew install koekeishiya/formulae/skhd
+
+# neovim
+brew install neovim
+brew install ripgrep
+
+# terminal
+brew install --cask ghostty
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+
+# command line tools
+brew install jq
+brew install bat
+brew install fzf
+brew install zoxide
+
+# terminal multiplexer
+brew install zellij
+
