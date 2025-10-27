@@ -9,11 +9,9 @@ return {
         null_ls.builtins.formatting.stylua,
 
         -- ruby
-        null_ls.builtins.formatting.rubocop,
-        null_ls.builtins.diagnostics.rubocop,
-        null_ls.builtins.formatting.erb_format,
-        null_ls.builtins.diagnostics.erb_lint,
-        null_ls.builtins.formatting.erb_format,
+        -- null_ls.builtins.formatting.erb_format,
+        -- null_ls.builtins.diagnostics.erb_lint,
+        -- null_ls.builtins.formatting.erb_format,
         -- null_ls.builtins.diagnostics.ruby_lsp,
 
         -- javascript
@@ -23,6 +21,10 @@ return {
 
         -- cpp
         null_ls.builtins.formatting.clang_format,
+
+        -- python 
+        null_ls.builtins.diagnostics.ruff,
+        null_ls.builtins.formatting.black,
 
         -- natural language
         null_ls.builtins.completion.spell,
