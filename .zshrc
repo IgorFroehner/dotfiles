@@ -83,6 +83,7 @@ plugins=(
           zsh-autosuggestions
           zsh-syntax-highlighting
           command-not-found
+          autoswitch_virtualenv
         )
 
 source $ZSH/oh-my-zsh.sh
