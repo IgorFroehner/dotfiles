@@ -169,7 +169,3 @@ eval "$(/Users/igor/.local/bin/mise activate zsh)"
 # zoxide
 eval "$(zoxide init zsh)"
 
-
-# opencode
-export PATH=/Users/igor/.opencode/bin:$PATH
-export PATH="/Users/igor/.pixi/bin:$PATH"

@@ -23,7 +23,7 @@ return {
         null_ls.builtins.formatting.clang_format,
 
         -- python 
-        null_ls.builtins.diagnostics.ruff,
+        -- null_ls.builtins.diagnostics.ruff,
         null_ls.builtins.formatting.black,
 
         -- natural language
