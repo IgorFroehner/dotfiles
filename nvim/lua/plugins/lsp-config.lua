@@ -29,19 +29,20 @@ return {
 		},
 		lazy = false, -- REQUIRED: tell lazy.nvim to start this plugin at startup
 		config = function(_, opts)
-			local lspconfig = require("lspconfig")
+      -- local lspconfig = require("lspconfig")
+      -- local lspconfig = 
 
 			-- Lua
-			lspconfig.lua_ls.setup({})
+			vim.lsp.enable('lua_ls')
 
 			-- type/javascript
-			lspconfig.ts_ls.setup({})
+			vim.lsp.enable('ts_ls')
 
 			-- c/c++
-			lspconfig.clangd.setup({})
+			vim.lsp.enable('clangd')
 
 			-- rust
-			lspconfig.rust_analyzer.setup({})
+			vim.lsp.enable('rust_analyzer')
 
 			-- mojo
 			vim.lsp.enable("mojo")

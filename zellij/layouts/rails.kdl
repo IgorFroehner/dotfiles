@@ -14,24 +14,34 @@ layout {
             args "."
         }
     }
-    tab name="#2 terminals" {
+    tab name="#2 AI" {
+        pane stacked=true {
+            pane
+        }
+    }
+    tab name="#3 terminals" {
         pane split_direction="vertical" {
             pane
             pane 
         }
     }
-    tab name="3# rails" {
+    tab name="#4 rails" {
         pane {
             command "rails"
             args "s"
             start_suspended true
         }
+        pane {
+            command "yarn"
+            args "dev"
+            start_suspended true
+        }
     }
-    tab name="4# sidekiq" split_direction="horizontal" {
+    tab name="#5 sidekiq" split_direction="horizontal" {
         pane 
         pane
     }
-    tab name="5# docker" {
+    tab name="#6 docker" {
         pane {
             command "docker-compose"
             args "up"

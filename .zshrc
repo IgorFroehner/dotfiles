@@ -79,7 +79,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
           git 
-          asdf 
           zsh-autosuggestions
           zsh-syntax-highlighting
           command-not-found
@@ -87,6 +86,7 @@ plugins=(
         )
 
 source $ZSH/oh-my-zsh.sh
+ZSH_THEME_TERM_TITLE_IDLE='%~'
 
 # User configuration
 
@@ -164,8 +164,12 @@ export HEADED_RPA_SELENIUM=1
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export PATH="$PATH:/Users/igor/.modular/bin"
+
 eval "$(/Users/igor/.local/bin/mise activate zsh)"
 
 # zoxide
 eval "$(zoxide init zsh)"
+
+# opencode
+export PATH=/Users/igor/.opencode/bin:$PATH
 
