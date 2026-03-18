@@ -9,6 +9,7 @@ Main stack:
 - `neovim` (Lazy.nvim-based config)
 - `ghostty` + `zsh` (`oh-my-zsh` + `powerlevel10k`)
 - `zellij` for terminal multiplexing
+- `karabiner-elements` for key remapping
 
 ## What is in this repo
 
@@ -18,6 +19,7 @@ Main stack:
 - `nvim/` - Neovim config and plugin specs
 - `ghostty/config` - terminal emulator config
 - `zellij/` - multiplexer config and layouts
+- `karabiner/` - key remapping (Cmd+hjkl → arrows, Caps Lock → Escape)
 - `.zshrc`, `.p10k.zsh` - shell and prompt setup
 
 ## Tools used by the setup/configs
@@ -30,6 +32,7 @@ Installed by `installs` and/or referenced by configs:
 - SketchyBar helpers: `switchaudio-osx`, `nowplaying-cli`, SF fonts
 - Runtime managers: `asdf` (plugins for `nodejs`, `yarn`, `ruby`)
 - Terminal tools: `ghostty`, `zellij`
+- Key remapping: `karabiner-elements`
 
 Also referenced in `.zshrc` as optional/user-local tools:
 - `mise`, `sdkman`, `bun`, `ghcup`, Docker CLI path, custom local bins
@@ -81,6 +84,7 @@ This links:
 - `nvim` -> `~/.config/nvim`
 - `ghostty` -> `~/.config/ghostty`
 - `zellij` -> `~/.config/zellij`
+- `karabiner` -> `~/.config/karabiner`
 - `.zshrc` and `.p10k.zsh` -> `~/`
 - copies `.zsh_secrets.example` -> `~/.zsh_secrets`
 

@@ -9,4 +9,6 @@ macos-titlebar-style = hidden
 
 keybind = super+shift+l=next_tab
 keybind = super+shift+h=previous_tab
+keybind = super+shift+left_bracket=text:\x1b[104;6u
+keybind = super+shift+right_bracket=text:\x1b[108;6u
 

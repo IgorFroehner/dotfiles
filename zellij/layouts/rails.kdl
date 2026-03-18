@@ -43,8 +43,8 @@ layout {
     }
     tab name="#6 docker" {
         pane {
-            command "docker-compose"
-            args "up"
+            command "bash"
+            args "-c" "trap 'docker-compose down' EXIT; docker-compose up"
         }
     }
 }
