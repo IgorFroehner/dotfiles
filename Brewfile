@@ -1,5 +1,4 @@
 # Taps
-tap "homebrew/cask-fonts"
 tap "koekeishiya/formulae"
 tap "FelixKratz/formulae"
 
