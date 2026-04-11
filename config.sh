@@ -36,6 +36,7 @@ link "$DOTFILES_DIR/zellij"     "$HOME/.config/zellij"
 link "$DOTFILES_DIR/karabiner"  "$HOME/.config/karabiner"
 link "$DOTFILES_DIR/sketchybar" "$HOME/.config/sketchybar"
 link "$DOTFILES_DIR/git"       "$HOME/.config/git"
+link "$DOTFILES_DIR/mise"      "$HOME/.config/mise"
 
 # ~/ targets
 link "$DOTFILES_DIR/yabai/yabairc" "$HOME/.yabairc"

@@ -165,7 +165,7 @@ export HEADED_RPA_SELENIUM=1
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 export PATH="$PATH:/Users/igor/.modular/bin"
 
-eval "$(/Users/igor/.local/bin/mise activate zsh)"
+eval "$(mise activate zsh)"
 
 # zoxide
 eval "$(zoxide init zsh)"
@@ -183,3 +183,4 @@ zj() {
   zellij --session "$(basename "$PWD")" --layout "${1:-nvim}"
 }
 
+export PATH="$HOME/.local/bin:$PATH"

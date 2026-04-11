@@ -28,15 +28,15 @@ else
 fi
 
 # Powerlevel10k
-if [ ! -d "$HOME/powerlevel10k" ]; then
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "==> Installing Powerlevel10k"
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 else
   echo "==> Powerlevel10k already installed"
 fi
 
 # Zsh plugins
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
   echo "==> Installing zsh-autosuggestions"
@@ -59,10 +59,3 @@ else
   echo "==> zsh-autoswitch-virtualenv already installed"
 fi
 
-# mise tool activation
-if command -v mise &>/dev/null; then
-  echo "==> Activating mise shell integration"
-  eval "$(mise activate bash)"
-else
-  echo "  [skip] mise not found, skipping"
-fi

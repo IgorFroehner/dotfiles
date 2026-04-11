@@ -14,4 +14,7 @@ defaults write com.apple.screencapture location ~/Pictures
 # Disable press-and-hold for keys (enable key repeat)
 defaults write -g ApplePressAndHoldEnabled -bool false
 
+# Auto-hide native menu bar (required for sketchybar to be visible)
+defaults write NSGlobalDomain _HIHideMenuBar -bool true
+
 echo "  Done. Some changes may require a logout to take effect."
