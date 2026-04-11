@@ -11,7 +11,7 @@ brew "gpg"
 brew "gawk"
 
 # Programming languages management
-brew "asdf"
+brew "mise"
 
 # Window manager and key bindings
 brew "koekeishiya/formulae/yabai"

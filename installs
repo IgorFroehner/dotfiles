@@ -59,12 +59,10 @@ else
   echo "==> zsh-autoswitch-virtualenv already installed"
 fi
 
-# asdf plugins
-if command -v asdf &>/dev/null; then
-  echo "==> Installing asdf plugins"
-  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git 2>/dev/null || true
-  asdf plugin add yarn 2>/dev/null || true
-  asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git 2>/dev/null || true
+# mise tool activation
+if command -v mise &>/dev/null; then
+  echo "==> Activating mise shell integration"
+  eval "$(mise activate bash)"
 else
-  echo "  [skip] asdf not found, skipping plugins"
+  echo "  [skip] mise not found, skipping"
 fi

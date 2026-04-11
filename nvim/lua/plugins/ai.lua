@@ -10,7 +10,7 @@ return {
 					keymap = {
 						accept = "<C-l>",
 						next = "<C-]>",
-						prev = "<C-]>",
+						prev = "<C-p>",
 						dismiss = "<C-x>",
 					},
 				},

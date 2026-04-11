@@ -175,4 +175,11 @@ export PATH=/Users/igor/.opencode/bin:$PATH
 
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
 alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
+alias cw="claude-work"
+alias cper="claude-personal"
+
+# zellij with session named after current directory
+zj() {
+  zellij --session "$(basename "$PWD")" --layout "${1:-nvim}"
+}
 

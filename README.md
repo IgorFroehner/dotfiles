@@ -30,12 +30,12 @@ Installed by `installs` and/or referenced by configs:
 - Editors/CLI: `neovim`, `ripgrep`, `jq`, `bat`, `fzf`, `zoxide`, `fd`
 - Windowing/UI: `yabai`, `skhd`, `sketchybar`, `SbarLua`, `lua`
 - SketchyBar helpers: `switchaudio-osx`, `nowplaying-cli`, SF fonts
-- Runtime managers: `asdf` (plugins for `nodejs`, `yarn`, `ruby`)
+- Runtime managers: `mise` (for `nodejs`, `yarn`, `ruby`, etc.)
 - Terminal tools: `ghostty`, `zellij`
 - Key remapping: `karabiner-elements`
 
 Also referenced in `.zshrc` as optional/user-local tools:
-- `mise`, `sdkman`, `bun`, `ghcup`, Docker CLI path, custom local bins
+- `sdkman`, `bun`, `ghcup`, Docker CLI path, custom local bins
 
 ## Setup
 
@@ -61,7 +61,6 @@ brew install fd
 ### 3) Install extras used by configs
 
 ```bash
-bash install-asdf-plugins
 bash zsh-plugins-install
 bash sketchybar/helpers/install.sh
 ```

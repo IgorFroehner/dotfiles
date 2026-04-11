@@ -252,8 +252,8 @@ keybinds clear-defaults=true {
         bind "z" { ToggleFocusFullscreen; SwitchToMode "normal"; }
     }
     shared_except "locked" "tab" {
-      bind "Ctrl w" {
-          LaunchOrFocusPlugin "https://github.com/sharph/zellij-worktree/releases/latest/download/zellij-worktree.wasm" {
+      bind "Ctrl Shift g" {
+          LaunchOrFocusPlugin "file:~/.config/zellij/plugins/zellij-git-sessions.wasm" {
               floating true
           }
       }
@@ -277,7 +277,7 @@ plugins {
     welcome-screen location="zellij:session-manager" {
         welcome_screen false
     }
-    worktree location="https://github.com/sharph/zellij-worktree/releases/latest/download/zellij-worktree.wasm"
+    git-sessions location="file:~/.config/zellij/plugins/zellij-git-sessions.wasm"
 }
 
 // Plugins to load in the background when a new session starts
@@ -320,7 +320,7 @@ theme "onedark"
 // The folder in which Zellij will look for layouts
 // (Requires restart)
 // 
-layout_dir "~/.config/zellij/layouts"
+layout_dir "/Users/igor/.config/zellij/layouts"
  
 // The folder in which Zellij will look for themes
 // (Requires restart)

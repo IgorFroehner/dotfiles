@@ -27,21 +27,11 @@ layout {
     }
     tab name="#4 rails" {
         pane {
-            command "rails"
-            args "s"
-            start_suspended true
-        }
-        pane {
-            command "yarn"
-            args "dev"
+            command "bin/dev"
             start_suspended true
         }
     }
-    tab name="#5 sidekiq" split_direction="horizontal" {
-        pane 
-        pane
-    }
-    tab name="#6 docker" {
+    tab name="#5 docker" {
         pane {
             command "bash"
             args "-c" "trap 'docker-compose down' EXIT; docker-compose up"
