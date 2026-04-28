@@ -147,10 +147,11 @@ _fzf_compgen_dir() {
   fd --type=d --hidden --exclude .git . "$1"
 }
 
-[ -f "/Users/igor/.ghcup/env" ] && . "/Users/igor/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+[ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env" # ghcup-env
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 
 # bun completions
-[ -s "/Users/igor/.bun/_bun" ] && source "/Users/igor/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 bindkey '^j' up-line-or-beginning-search
 bindkey '^k' down-line-or-beginning-search
@@ -163,7 +164,7 @@ export HEADED_RPA_SELENIUM=1
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-export PATH="$PATH:/Users/igor/.modular/bin"
+export PATH="$PATH:$HOME/.modular/bin"
 
 eval "$(mise activate zsh)"
 
@@ -171,7 +172,7 @@ eval "$(mise activate zsh)"
 eval "$(zoxide init zsh)"
 
 # opencode
-export PATH=/Users/igor/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
 alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"

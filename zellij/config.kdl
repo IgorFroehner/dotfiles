@@ -312,7 +312,7 @@ theme "onedark"
 // The folder in which Zellij will look for layouts
 // (Requires restart)
 // 
-layout_dir "/Users/igor/.config/zellij/layouts"
+layout_dir "~/.config/zellij/layouts"
  
 // The folder in which Zellij will look for themes
 // (Requires restart)
