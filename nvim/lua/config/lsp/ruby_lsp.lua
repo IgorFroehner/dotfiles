@@ -1,23 +1,26 @@
+local function get_project_ruby_version(dir)
+  local version_file = dir .. "/.ruby-version"
+  if vim.fn.filereadable(version_file) == 1 then
+    local lines = vim.fn.readfile(version_file)
+    if lines[1] then
+      return vim.trim(lines[1])
+    end
+  end
+end
+
 local function ruby_lsp_cmd(root_dir)
   local dir = root_dir or vim.fn.getcwd()
+  local mise = vim.fn.exepath("mise")
 
-  -- Prefer bundle exec in bundler projects (most reliable per-project)
-  local gemfile = dir .. "/Gemfile"
-  if vim.fn.filereadable(gemfile) == 1 then
-    local bundle = vim.fn.exepath("bundle")
-    if bundle ~= "" then
-      return { bundle, "exec", "ruby-lsp" }
-    end
+  if mise ~= "" then
+    local version = get_project_ruby_version(dir)
+    local tool = version and ("ruby@" .. version) or "ruby"
+    return { mise, "exec", tool, "--", "ruby-lsp" }
   end
 
   local ruby_lsp = vim.fn.exepath("ruby-lsp")
   if ruby_lsp ~= "" then
     return { ruby_lsp }
-  end
-
-  local mise = vim.fn.exepath("mise")
-  if mise ~= "" then
-    return { mise, "x", "--", "ruby-lsp" }
   end
 
   return { "ruby-lsp" }

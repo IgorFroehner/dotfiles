@@ -4,6 +4,7 @@ python = "latest"
 ruby = "latest"
 
 [settings]
+legacy_version_file = true
 
 [settings.ruby]
 compile = false

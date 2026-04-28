@@ -5,7 +5,6 @@ echo "==> Applying macOS defaults"
 
 # Instant dock autohide (no animation delay)
 defaults write com.apple.dock autohide-time-modifier -int 0
-killall Dock
 
 # Screenshots: JPG format, save to ~/Pictures
 defaults write com.apple.screencapture type JPG
@@ -16,5 +15,10 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 
 # Auto-hide native menu bar (required for sketchybar to be visible)
 defaults write NSGlobalDomain _HIHideMenuBar -bool true
+
+# Disable auto-rearranging Spaces based on recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+killall Dock
 
 echo "  Done. Some changes may require a logout to take effect."

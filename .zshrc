@@ -178,9 +178,11 @@ alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
 alias cw="claude-work"
 alias cper="claude-personal"
 
-# zellij with session named after current directory
+# zellij with session named after current directory + path hash to avoid collisions
 zj() {
-  zellij --session "$(basename "$PWD")" --layout "${1:-nvim}"
+  local hash=$(echo -n "$PWD" | shasum | cut -c1-6)
+  local name="$(basename "$PWD")-$hash"
+  zellij --session "$name" --layout "${1:-nvim}"
 }
 
 export PATH="$HOME/.local/bin:$PATH"

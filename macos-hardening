@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODE=${1:-}
+
+usage() {
+  echo "Usage: $0 <home|travel>"
+  echo ""
+  echo "  home    Fast wakeup, standard security (trusted network)"
+  echo "  travel  Max security, slower wakeup (protect against theft)"
+  exit 1
+}
+
+[[ -z "$MODE" ]] && usage
+
+echo "==> Applying macOS security hardening — $MODE mode"
+echo "    (sudo required; you may be prompted for your password)"
+echo ""
+
+echo "==> Power management (pmset)"
+case "$MODE" in
+  home)
+    # Normal sleep: RAM stays powered → fast wakeup.
+    # FileVault key destruction and deep hibernate only matter if the
+    # machine could be physically stolen while sleeping.
+    sudo pmset -a hibernatemode 3
+    sudo pmset -a destroyfvkeyonstandby 0
+    sudo pmset -a powernap 1
+    sudo pmset -a standby 1
+    sudo pmset -a standbydelay 10800
+    sudo pmset -a autopoweroff 1
+    ;;
+  travel)
+    # Safe sleep: RAM written to disk and powered off → decryption key
+    # never survives standby, at the cost of slower wakeup.
+    sudo pmset -a destroyfvkeyonstandby 1
+    sudo pmset -a hibernatemode 25
+    sudo pmset -a powernap 0
+    sudo pmset -a standby 0
+    sudo pmset -a standbydelay 0
+    sudo pmset -a autopoweroff 0
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+# Always on regardless of mode.
+
+echo ""
+echo "==> Application firewall"
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+
+# Captive portal assistant can auto-open attacker-controlled pages on
+# untrusted networks; disable and sign in manually via a browser instead.
+echo ""
+echo "==> Disabling captive portal assistant"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control.plist Active -bool false
+
+echo ""
+echo "  Done. Some settings may require a reboot to take effect."
