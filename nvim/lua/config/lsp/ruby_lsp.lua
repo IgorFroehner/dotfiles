@@ -14,8 +14,12 @@ local function ruby_lsp_cmd(root_dir)
 
   if mise ~= "" then
     local version = get_project_ruby_version(dir)
-    local tool = version and ("ruby@" .. version) or "ruby"
-    return { mise, "exec", tool, "--", "ruby-lsp" }
+    if version then
+      -- gem:ruby-lsp overrides the ruby version to wherever it's installed,
+      -- so omit it and rely on the project's version having ruby-lsp installed.
+      return { mise, "exec", "ruby@" .. version, "--", "ruby-lsp" }
+    end
+    return { mise, "exec", "gem:ruby-lsp", "--", "ruby-lsp" }
   end
 
   local ruby_lsp = vim.fn.exepath("ruby-lsp")

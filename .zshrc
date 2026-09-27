@@ -175,15 +175,14 @@ eval "$(zoxide init zsh)"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
+alias claude-work2="CLAUDE_CONFIG_DIR=~/.claude-word2 claude"
 alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
 alias cw="claude-work"
+alias cw2="claude-work2"
 alias cper="claude-personal"
 
-# zellij with session named after current directory + path hash to avoid collisions
 zj() {
-  local hash=$(echo -n "$PWD" | shasum | cut -c1-6)
-  local name="$(basename "$PWD")-$hash"
-  zellij --session "$name" --layout "${1:-nvim}"
+  zellij --layout "$HOME/.config/zellij/layouts/${1:-nvim}.kdl"
 }
 
 export PATH="$HOME/.local/bin:$PATH"

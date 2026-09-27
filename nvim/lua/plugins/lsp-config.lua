@@ -89,10 +89,5 @@ return {
 
 		vim.keymap.set("n", "<leader>gr", telescope_builtin.lsp_references, { noremap = true, silent = true, desc = "References" })
 		end,
-		init = function()
-			vim.g.coq_settings = {
-				auto_start = false,
-			}
-		end,
 	},
 }
