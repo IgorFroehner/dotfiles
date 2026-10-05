@@ -181,8 +181,30 @@ alias cw="claude-work"
 alias cw2="claude-work2"
 alias cper="claude-personal"
 
+# Session is named after the current dir (e.g. "dotfiles"), suffixed -2, -3...
+# when another live session already has that name. Stale exited sessions are
+# replaced. Inside zellij (no nesting) it renames the current session instead.
 zj() {
-  zellij --layout "$HOME/.config/zellij/layouts/${1:-nvim}.kdl"
+  local base="${PWD:t}"
+  [[ "$PWD" == "$HOME" ]] && base="home"
+  base="${base//[^A-Za-z0-9._-]/-}"
+
+  local -a live exited
+  live=(${(f)"$(zellij ls -n 2>/dev/null | grep -v -e EXITED -e '(current)' | cut -d' ' -f1)"})
+  exited=(${(f)"$(zellij ls -n 2>/dev/null | grep EXITED | cut -d' ' -f1)"})
+
+  local name="$base" i=2
+  while (( ${live[(Ie)$name]} )); do
+    name="$base-$((i++))"
+  done
+  (( ${exited[(Ie)$name]} )) && zellij delete-session "$name" >/dev/null 2>&1
+
+  if [[ -n "$ZELLIJ" ]]; then
+    zellij action rename-session "$name"
+  else
+    # `--session X --layout Y` would add Y to an existing session X, so create via attach -c
+    zellij attach --create "$name" options --default-layout "$HOME/.config/zellij/layouts/${1:-nvim}.kdl"
+  fi
 }
 
 export PATH="$HOME/.local/bin:$PATH"
