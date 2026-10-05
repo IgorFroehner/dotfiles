@@ -1,105 +1,32 @@
-local settings = require("settings")
+-- SF Symbols
+return {
+	apple = "􀣺",
+	clipboard = "􀉄",
+	menu = "􀄫",
+	slider_knob = "􀀁",
 
-local icons = {
-	sf_symbols = {
-		plus = "􀅼",
-		loading = "􀖇",
-		apple = "􀣺",
-		gear = "􀍟",
-		cpu = "􀫥",
-		memory = "􀫦",
-		hdd = "􀥾",
-		brew = "􀐚",
-		mail = "􀍕",
-		messages = "􀌤",
-		clipboard = "􀉄",
-		keyboard = "􀇳",
-		control_center = "􀜊",
-
-		lock = {
-			close = "􀎡",
-			open = "􀎥",
-		},
-
-		switch = {
-			on = "􁏮",
-			off = "􁏯",
-		},
-
-		volume = {
-			_100 = "􀊩",
-			_66 = "􀊧",
-			_33 = "􀊥",
-			_10 = "􀊡",
-			_0 = "􀊣",
-		},
-		battery = {
-			_100 = "􀛨",
-			_75 = "􀺸",
-			_50 = "􀺶",
-			_25 = "􀛩",
-			_0 = "􀛪",
-			charging = "􀢋",
-		},
-		wifi = {
-			upload = "􀄨",
-			download = "􀄩",
-			connected = "􀙇",
-			disconnected = "􀙈",
-			router = "􁓤",
-		},
-		spotify = {
-      play = "􀊅",
-      pause = "􀊃"
-		},
+	volume = {
+		_100 = "􀊩",
+		_66 = "􀊧",
+		_33 = "􀊥",
+		_10 = "􀊡",
+		_0 = "􀊣",
 	},
-
-	-- Alternative NerdFont icons
-	nerdfont = {
-		plus = "",
-		loading = "",
-		apple = "􀝶",
-		gear = "",
-		cpu = "",
-		clipboard = "Missing Icon",
-
-		switch = {
-			on = "󱨥",
-			off = "󱨦",
-		},
-		volume = {
-			_100 = "",
-			_66 = "",
-			_33 = "",
-			_10 = "",
-			_0 = "",
-		},
-		battery = {
-			_100 = "",
-			_75 = "",
-			_50 = "",
-			_25 = "",
-			_0 = "",
-			charging = "",
-		},
-		wifi = {
-			upload = "",
-			download = "",
-			connected = "󰖩",
-			disconnected = "󰖪",
-			router = "Missing Icon",
-		},
-		media = {
-			back = "",
-			forward = "",
-			play_pause = "",
-		},
+	battery = {
+		_100 = "􀛨",
+		_75 = "􀺸",
+		_50 = "􀺶",
+		_25 = "􀛩",
+		_0 = "􀛪",
+		charging = "􀢋",
+	},
+	wifi = {
+		connected = "􀙇",
+		disconnected = "􀙈",
+		router = "􁓤",
+	},
+	spotify = {
+		play = "􀊅",
+		pause = "􀊃",
 	},
 }
-
-if not (settings.icons == "NerdFont") then
-	return icons.sf_symbols
-else
-	return icons.nerdfont
-end
-

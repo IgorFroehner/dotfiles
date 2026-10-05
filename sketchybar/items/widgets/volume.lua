@@ -1,37 +1,27 @@
 local colors = require("colors")
 local icons = require("icons")
 local settings = require("settings")
-local popup_width = 250
+local ui = require("helpers.ui")
 
--- Track created device items
-local created_device_items = {}
+local POPUP_WIDTH = 250
 
-local volume_percent = sbar.add("item", "widgets.volume1", {
-	position = "right",
-	icon = { drawing = false },
-	label = {
-		drawing = false,
-	},
-})
-local volume_icon = sbar.add("item", "widgets.volume2", {
+local volume = sbar.add("item", "widgets.volume", {
 	position = "right",
 	padding_right = settings.item_padding - 3.0,
 	padding_left = settings.item_padding,
 	icon = {
-		drawing = true,
 		width = settings.item_height + settings.item_spacing,
 		align = "center",
 	},
 })
-local volume_bracket = sbar.add("bracket", "widgets.volume.bracket", { volume_icon.name }, {
-	popup = {
-		drawing = false,
-		align = "center",
-	},
+
+local volume_bracket = sbar.add("bracket", "widgets.volume.bracket", { volume.name }, {
+	popup = { align = "center" },
 })
-local volume_slider = sbar.add("slider", popup_width, {
+
+local slider = sbar.add("slider", "widgets.volume.slider", POPUP_WIDTH, {
 	position = "popup." .. volume_bracket.name,
-	width = popup_width,
+	width = POPUP_WIDTH,
 	padding_right = settings.popup_padding,
 	padding_left = settings.popup_padding,
 	background = {
@@ -46,109 +36,101 @@ local volume_slider = sbar.add("slider", popup_width, {
 			color = colors.bg2,
 		},
 		knob = {
-			string = "􀀁",
+			string = icons.slider_knob,
 			drawing = true,
 		},
 	},
 	click_script = 'osascript -e "set volume output volume $PERCENTAGE"',
 })
-volume_percent:subscribe("volume_change", function(env)
-	local volume = tonumber(env.INFO)
-	local icon = icons.volume._0
-	local color = colors.white
-	if volume > 60 then
-		icon = icons.volume._100
-	elseif volume > 30 then
-		icon = icons.volume._66
-	elseif volume > 10 then
-		icon = icons.volume._33
-	elseif volume > 0 then
-		icon = icons.volume._10
-	elseif volume == 0 then
-		icon = icons.volume._0
-		color = colors.grey
+
+local function volume_icon(level)
+	if level > 60 then
+		return icons.volume._100, colors.white
+	elseif level > 30 then
+		return icons.volume._66, colors.white
+	elseif level > 10 then
+		return icons.volume._33, colors.white
+	elseif level > 0 then
+		return icons.volume._10, colors.white
 	end
-	local lead = ""
-	if volume < 10 then
-		lead = "0"
-	end
-	volume_icon:set({ icon = { string = icon, color = color } })
-	volume_slider:set({ slider = { percentage = volume } })
-end)
-local function volume_collapse_details()
-	-- Remove only the device items we know we've created
-	for _, item_name in ipairs(created_device_items) do
-		sbar.remove(item_name)
-	end
-	-- Clear the list of created items
-	created_device_items = {}
-	volume_bracket:set({ popup = { drawing = false } })
+	return icons.volume._0, colors.grey
 end
-local current_audio_device = "None"
-local function volume_toggle_details(env)
-	if env.BUTTON == "right" then
-		sbar.exec("open /System/Library/PreferencePanes/Sound.prefpane")
+
+volume:subscribe("volume_change", function(env)
+	local level = tonumber(env.INFO)
+	local icon, color = volume_icon(level)
+	volume:set({ icon = { string = icon, color = color } })
+	slider:set({ slider = { percentage = level } })
+end)
+
+-- Output devices are listed in the popup and rebuilt every time it opens
+local device_items = {}
+
+local function clear_devices()
+	for _, item in ipairs(device_items) do
+		sbar.remove(item.name)
+	end
+	device_items = {}
+end
+
+local function select_device(device, item)
+	sbar.exec('SwitchAudioSource -t output -s "' .. device:gsub('"', '\\"') .. '"', function()
+		for _, other in ipairs(device_items) do
+			other:set({ label = { color = colors.quicksilver } })
+		end
+		item:set({ label = { color = colors.white } })
+	end)
+end
+
+local function list_devices()
+	clear_devices()
+	sbar.exec("SwitchAudioSource -t output -c", function(current)
+		current = current:gsub("\n$", "")
+		sbar.exec("SwitchAudioSource -a -t output", function(available)
+			for device in available:gmatch("[^\r\n]+") do
+				local item = sbar.add("item", "volume.device." .. #device_items, {
+					position = "popup." .. volume_bracket.name,
+					padding_right = settings.popup_padding,
+					padding_left = settings.popup_padding,
+					y_offset = 8,
+					width = POPUP_WIDTH,
+					label = {
+						string = device,
+						color = device == current and colors.white or colors.quicksilver,
+					},
+				})
+				item:subscribe("mouse.clicked", function()
+					select_device(device, item)
+				end)
+				table.insert(device_items, item)
+			end
+		end)
+	end)
+end
+
+local function show_details()
+	if not ui.show_popup(volume_bracket) then
 		return
 	end
-	local is_popup_visible = volume_bracket:query().popup.drawing == "on"
-	if is_popup_visible then
-		volume_bracket:set({ popup = { drawing = false } })
-		-- Remove only the device items we know we've created
-		for _, item_name in ipairs(created_device_items) do
-			sbar.remove(item_name)
-		end
-		-- Clear the list of created items
-		created_device_items = {}
-	else
-		volume_bracket:set({ popup = { drawing = true } })
-		-- Remove any existing device items we previously created
-		for _, item_name in ipairs(created_device_items) do
-			sbar.remove(item_name)
-		end
-		-- Clear the list of created items
-		created_device_items = {}
+	list_devices()
+end
 
-		sbar.exec("SwitchAudioSource -t output -c", function(result)
-			current_audio_device = result:sub(1, -2)
-			sbar.exec("SwitchAudioSource -a -t output", function(available)
-				current = current_audio_device
-				local color = colors.quicksilver
-				local counter = 0
-				for device in string.gmatch(available, "[^\r\n]+") do
-					local color = colors.quicksilver
-					if current == device then
-						color = colors.white
-					end
-					local item_name = "volume.device." .. counter
-					sbar.add("item", item_name, {
-						position = "popup." .. volume_bracket.name,
-						padding_right = settings.popup_padding,
-						padding_left = settings.popup_padding,
-						y_offset = 8,
-						width = popup_width,
-						label = { string = device, color = color },
-						click_script = 'SwitchAudioSource -s "'
-								.. device
-								.. '" && sketchybar --set volume.device.* label.color='
-								.. colors.quicksilver
-								.. " --set $NAME label.color="
-								.. colors.white,
-					})
-					-- Track the created item
-					table.insert(created_device_items, item_name)
-					counter = counter + 1
-				end
-			end)
-		end)
+local function hide_details()
+	ui.hide_popup(volume_bracket)
+	clear_devices()
+end
+
+volume:subscribe("mouse.entered", show_details)
+volume:subscribe("mouse.exited.global", hide_details)
+
+volume:subscribe("mouse.clicked", function(env)
+	if env.BUTTON == "right" then
+		sbar.exec("open /System/Library/PreferencePanes/Sound.prefPane")
 	end
-end
-local function volume_scroll(env)
-	local delta = env.SCROLL_DELTA
-	sbar.exec('osascript -e "set volume output volume (output volume of (get volume settings) + ' .. delta .. ')"')
-end
-volume_icon:subscribe("mouse.entered", volume_toggle_details)
-volume_icon:subscribe("mouse.exited.global", volume_collapse_details)
-volume_icon:subscribe("mouse.scrolled", volume_scroll)
-volume_percent:subscribe("mouse.clicked", volume_toggle_details)
-volume_percent:subscribe("mouse.scrolled", volume_scroll)
+end)
 
+volume:subscribe("mouse.scrolled", function(env)
+	sbar.exec(
+		'osascript -e "set volume output volume (output volume of (get volume settings) + ' .. env.SCROLL_DELTA .. ')"'
+	)
+end)

@@ -1,26 +1,19 @@
 local settings = require("settings")
 local colors = require("colors")
+local style = require("helpers.style")
 
 -- Equivalent to the --default domain
 sbar.default({
 	updates = "when_shown",
 	icon = {
-		font = {
-			family = settings.font.icons,
-			style = settings.font.style_map["Regular"],
-			size = settings.font.sizes.icons,
-		},
+		font = style.font("icons", "Regular"),
 		color = colors.white,
 		padding_left = settings.paddings,
 		padding_right = settings.paddings,
 		background = { image = { corner_radius = settings.item_corner_radius } },
 	},
 	label = {
-		font = {
-			family = settings.font.text,
-			style = settings.font.style_map["Medium"],
-			size = settings.font.sizes.text,
-		},
+		font = style.font("text", "Bold"),
 		color = colors.white,
 		padding_left = settings.paddings,
 		padding_right = settings.paddings,
@@ -33,7 +26,6 @@ sbar.default({
 			corner_radius = settings.item_corner_radius,
 		},
 	},
-	-- TODO: Add a popup menu styles
 	popup = {
 		background = {
 			drawing = true,

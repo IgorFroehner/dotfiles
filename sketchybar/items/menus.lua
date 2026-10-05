@@ -1,137 +1,88 @@
 local colors = require("colors")
+local icons = require("icons")
 local settings = require("settings")
-local events = require("events") -- Event subscription
+local style = require("helpers.style")
 
--- Constants
 local MAX_ITEMS = 7
-local MENU_SCRIPT = "$CONFIG_DIR/helpers/menus/bin/menus"
-local ANIMATION_TIME = 5
+local MENUS_BIN = "$CONFIG_DIR/helpers/menus/bin/menus"
+local STAGGER = 0.03
 
--- Initialize the menu watcher
-local menu_watcher = sbar.add("item", { drawing = false, updates = false })
-local space_menu_swap = sbar.add("item", { drawing = false, updates = true })
-
--- Menu items
+-- Item 1 is the app's Apple menu and gets a chevron, the rest show menu titles
 local menu_items = {}
 for i = 1, MAX_ITEMS do
-	local menu = sbar.add("item", "menu." .. i, {
+	menu_items[i] = sbar.add("item", "menu." .. i, {
 		drawing = false,
-		icon = { drawing = false },
-		label = {
-			padding_right = settings.item_spacing,
-			color = colors.quicksilver,
+		padding_right = settings.item_spacing,
+		icon = {
+			drawing = i == 1,
+			string = icons.menu,
+			font = style.font("icons", "Semibold", settings.font.sizes.text - 1.0),
 		},
-		click_script = MENU_SCRIPT .. " -s " .. i,
+		label = {
+			font = style.font("text", "Semibold"),
+			color = colors.quicksilver,
+			padding_right = settings.item_spacing,
+		},
+		click_script = MENUS_BIN .. " -s " .. i,
 	})
-	table.insert(menu_items, menu)
 end
 
--- Padding item to handle spacing
 local menu_padding = sbar.add("item", "menu.padding", { drawing = false, width = 5 })
 
--- Animate the appearance of menu labels
-local function animate_menu_labels()
-	for i, menu_item in ipairs(menu_items) do
-		local delay = (i - 1) * 0.030 -- Stagger animations by 0.030 seconds per item
-		sbar.exec("sleep " .. delay, function()
-			sbar.animate("tanh", ANIMATION_TIME, function()
-				menu_item:set({
-					label = { color = colors.quicksilver },
-					drawing = true,
-				})
-			end)
-		end)
-	end
+-- Hidden item that only listens for events
+local watcher = sbar.add("item", "menu.watcher", { drawing = false, updates = true })
+
+local visible = false
+-- Bumped on every show/hide so stale staggered reveals are dropped
+local generation = 0
+
+local function hide_menus()
+	generation = generation + 1
+	sbar.set("/menu\\..*/", { drawing = false })
 end
 
--- Update the menu items dynamically
-local function update_menus(space_id)
-	sbar.exec(MENU_SCRIPT .. " -l", function(menus)
-		-- Hide all menus initially
-		sbar.set("/menu\\..*/", { drawing = false })
-		menu_padding:set({ drawing = true })
+local function show_menus()
+	hide_menus()
+	local current = generation
 
-		local id = 1
-		for menu in string.gmatch(menus, "[^\r\n]+") do
-			if id > MAX_ITEMS then
-				break
+	-- Pin the menus to the focused window's space
+	sbar.exec("yabai -m query --windows --window | jq -r '.space'", function(space)
+		space = tonumber(space)
+		sbar.exec(MENUS_BIN .. " -l", function(menus)
+			if current ~= generation then
+				return
 			end
+			menu_padding:set({ drawing = true })
 
-			local menu_item = menu_items[id]
-			local is_first_item = id == 1
-
-			if is_first_item then
-				-- Special styling for the first menu item (e.g., an icon)
-				menu_item:set({
-					icon = {
-						drawing = true,
-						string = "􀄫", -- Replace with the actual icon
-						color = colors.white,
-						font = {
-							family = settings.font.icons,
-							style = settings.font.style_map["Semibold"],
-							size = settings.font.sizes.text - 1.0,
-						},
-					},
-					drawing = true,
-					space = space_id,
-					padding_right = settings.item_spacing,
-				})
-			else
-				-- Regular menu item with a label
-				menu_item:set({
-					label = {
-						string = menu,
-						font = { family = settings.font.text, style = settings.font.style_map["Semibold"] },
-						color = colors.quicksilver, -- Default label color
-					},
-					drawing = false,        -- Temporarily hide for animation
-					space = space_id,
-					padding_right = settings.item_spacing,
-				})
+			local i = 0
+			for menu in menus:gmatch("[^\r\n]+") do
+				i = i + 1
+				if i > MAX_ITEMS then
+					break
+				end
+				local item = menu_items[i]
+				item:set({ space = space, label = i > 1 and menu or "" })
+				sbar.delay((i - 1) * STAGGER, function()
+					if current == generation then
+						item:set({ drawing = true })
+					end
+				end)
 			end
-
-			id = id + 1
-		end
-
-		-- Animate menu label appearance
-		animate_menu_labels()
+		end)
 	end)
 end
 
--- Track menu visibility
-local menu_visible = false
-
--- Toggle menu visibility and update based on space swap
-space_menu_swap:subscribe("swap_menus_and_spaces", function()
-	if menu_visible then
-		-- Reset menus only when explicitly called again
-		menu_visible = false
-		menu_watcher:set({ updates = false })
-		sbar.set("/menu\\..*/", { drawing = false })
+watcher:subscribe("swap_menus_and_spaces", function()
+	visible = not visible
+	if visible then
+		show_menus()
 	else
-		-- Show the menus if they are not already visible
-		menu_visible = true
-		menu_watcher:set({ updates = true })
-		sbar.exec("yabai -m query --windows --window | jq -r '.space'", function(space_id)
-			update_menus(space_id)
-		end)
+		hide_menus()
 	end
 end)
 
-space_menu_swap:subscribe("front_app_switched", function(env)
-	if menu_visible then
-		-- Hide all old menu items
-		menu_watcher:set({ updates = true })
-		-- Change to the new menus
-		sbar.exec("yabai -m query --windows --window | jq -r '.space'", function(space_id)
-			update_menus(space_id)
-		end)
-	else
-		menu_watcher:set({ updates = false })
-		sbar.set("/menu\\..*/", { drawing = false })
+watcher:subscribe("front_app_switched", function()
+	if visible then
+		show_menus()
 	end
 end)
-
--- Return the main menu watcher object
-return menu_watcher

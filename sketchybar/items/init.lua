@@ -4,6 +4,7 @@ require("items.spaces")
 require("items.front_app")
 require("items.menus")
 
+-- Right of the notch
 require("items.spotify")
 
 -- Right items (R to L)

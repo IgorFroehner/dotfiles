@@ -1,84 +1,41 @@
 local settings = require("settings")
-local colors = require("colors")
+local style = require("helpers.style")
+local ui = require("helpers.ui")
 
-local time = sbar.add("item", {
-	icon = {
-		drawing = false, -- No icon for time
-	},
+local time = sbar.add("item", "time", {
+	position = "right",
+	update_freq = 30,
+	icon = { drawing = false },
 	label = {
-		font = {
-			family = settings.font.numbers,
-			style = settings.font.style_map["Semibold"],
-			size = settings.font.sizes.numbers + 1.0,
-		},
-
-		string = "", -- Will be set by the subscription
-		color = colors.white,
+		font = style.font("numbers", "Semibold", settings.font.sizes.numbers + 1.0),
 		align = "center",
 		padding_left = settings.item_padding,
 		padding_right = settings.bar_margin_padding,
 	},
-	position = "right",
-	update_freq = 30,
 })
 
 local date = sbar.add("item", "date", {
-	icon = {
-		drawing = false,
-	},
-	label = {
-		color = colors.white,
-		align = "right",
-		font = {
-			family = settings.font.numbers,
-			style = settings.font.style_map["Regular"],
-		},
-	},
 	position = "right",
-	update_freq = 30,
 	padding_left = settings.item_padding,
+	icon = { drawing = false },
+	label = {
+		font = style.font("numbers", "Regular", settings.font.sizes.text),
+		align = "right",
+	},
 })
 
--- Subscribe to update the time and date
-date:subscribe({ "forced", "routine", "system_woke" }, function(env)
-	date:set({ label = os.date("%a %b %d") })
-end)
-
-time:subscribe({ "forced", "routine", "system_woke" }, function(env)
+-- time's routine drives both labels
+local function update()
 	time:set({ label = os.date("%H:%M") })
-end)
-
--- Track menu visibility
-local menu_visible = false
-
--- Functions to handle menu visibility
-local function toggle_menu()
-	if menu_visible then
-		menu_visible = false
-	else
-		sbar.exec("~/.config/sketchybar/helpers/event_providers/bin/apple_menu app=date")
-		menu_visible = true
-	end
+	date:set({ label = os.date("%a %b %d") })
 end
 
--- Add click handlers for both time and date
-time:subscribe("mouse.clicked", function(env)
-	toggle_menu()
+time:subscribe({ "forced", "routine", "system_woke" }, update)
+
+time:subscribe("mouse.clicked", function()
+	ui.toggle_panel("date")
 end)
 
-date:subscribe("mouse.clicked", function(env)
+date:subscribe("mouse.clicked", function()
 	sbar.exec("open -a Calendar")
-end)
-
--- Handle window closing when clicking outside
-time:subscribe("mouse.clicked.outside", function(env)
-	if menu_visible then
-		sbar.exec("pkill -SIGUSR1 apple_menu")
-		menu_visible = false
-	end
-end)
-
--- -- Prevent window from closing when clicking inside
-time:subscribe("mouse.clicked.inside", function(env)
-	return
 end)

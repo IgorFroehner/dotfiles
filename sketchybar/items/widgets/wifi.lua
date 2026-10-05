@@ -1,139 +1,59 @@
 local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
+local style = require("helpers.style")
+local ui = require("helpers.ui")
 
--- At startup, only start network_load if it's not already running
+local POPUP_WIDTH = 200
 
-local popup_width = 200
-
-local wifi = sbar.add("item", "widgets.wifi.padding", {
+local wifi = sbar.add("item", "widgets.wifi", {
 	position = "right",
 	padding_left = settings.item_padding,
 	padding_right = settings.item_padding,
 	label = { drawing = false },
-	icon = { drawing = true },
-	click_script = "$CONFIG_DIR/helpers/menus/bin/menus -s 'Control Center,WiFi'",
+	click_script = ui.menu_extra("Control Center,WiFi"),
 })
 
--- Background around the item
-local wifi_bracket = sbar.add("bracket", "widgets.wifi.bracket", {
-	wifi.name,
-}, {
-	popup = {
-		drawing = false,
-		align = "center",
-	},
+local wifi_bracket = sbar.add("bracket", "widgets.wifi.bracket", { wifi.name }, {
+	popup = { align = "center" },
 })
 
 local ssid = sbar.add("item", {
 	position = "popup." .. wifi_bracket.name,
 	padding_left = settings.popup_padding,
 	padding_right = settings.popup_padding,
+	width = POPUP_WIDTH,
 	icon = {
-		padding_right = 16,
-		font = {
-			family = settings.font.icons,
-			style = settings.font.style_map["Bold"],
-			size = settings.font.sizes.text,
-		},
 		string = icons.wifi.router,
+		padding_right = 16,
+		font = style.font("icons", "Bold", settings.font.sizes.text),
 	},
-	width = popup_width,
 	label = {
-		font = {
-			family = settings.font.text,
-			style = settings.font.style_map["SemiBold"],
-			size = settings.font.sizes.text,
-		},
+		font = style.font("text", "Semibold"),
 		max_chars = 25,
 		string = "????????????",
 	},
 })
 
-local hostname = sbar.add("item", {
-	position = "popup." .. wifi_bracket.name,
-	padding_left = settings.popup_padding,
-	padding_right = settings.popup_padding,
-	width = popup_width,
-	icon = {
-		align = "left",
-		string = "Hostname:",
-		width = popup_width / 2,
-		font = {
-			family = settings.font.icons,
-			style = settings.font.style_map["Bold"],
-			size = settings.font.sizes.text,
-		},
-	},
-	label = {
-		font = {
-			family = settings.font.text,
-			style = settings.font.style_map["Regular"],
-			size = settings.font.sizes.text,
-		},
-		max_chars = 20,
-		string = "????????????",
-		width = popup_width / 2,
-		align = "right",
-	},
-})
+local hostname = ui.popup_row(wifi_bracket.name, "Hostname:", { width = POPUP_WIDTH, max_chars = 20 })
+local ip = ui.popup_row(wifi_bracket.name, "IP:", { width = POPUP_WIDTH })
+local router = ui.popup_row(wifi_bracket.name, "Router:", { width = POPUP_WIDTH })
 
-local ip = sbar.add("item", {
-	position = "popup." .. wifi_bracket.name,
-	padding_left = settings.popup_padding,
-	padding_right = settings.popup_padding,
-	icon = {
-		align = "left",
-		string = "IP:",
-		width = popup_width / 2,
-		font = {
-			family = settings.font.icons,
-			style = settings.font.style_map["Bold"],
-			size = settings.font.sizes.text,
-		},
-	},
-	label = {
-		font = {
-			family = settings.font.text,
-			style = settings.font.style_map["Regular"],
-			size = settings.font.sizes.text,
-		},
-		string = "???.???.???.???",
-		width = popup_width / 2,
-		align = "right",
-	},
-})
+-- macOS redacts the SSID from ipconfig/system_profiler; the SSID helper app reads it with
+-- Location Services permission. It's launched through `open` so the permission is its own.
+local SSID_CMD = 'F=$(mktemp); open -W -n --stdout "$F" "$CONFIG_DIR/helpers/ssid/bin/SSID.app"; cat "$F"; rm -f "$F"'
 
-local router = sbar.add("item", {
-	position = "popup." .. wifi_bracket.name,
-	padding_left = settings.popup_padding,
-	padding_right = settings.popup_padding,
-	width = popup_width,
-	icon = {
-		align = "left",
-		string = "Router:",
-		width = popup_width / 2,
-		font = {
-			family = settings.font.icons,
-			style = settings.font.style_map["Bold"],
-			size = settings.font.sizes.text,
-		},
-	},
-	label = {
-		font = {
-			family = settings.font.text,
-			style = settings.font.style_map["Regular"],
-			size = settings.font.sizes.text,
-		},
-		string = "???.???.???.???",
-		width = popup_width / 2,
-		align = "right",
-	},
-})
+-- Each popup row and the command that fills it
+local details = {
+	{ ssid, SSID_CMD },
+	{ hostname, "networksetup -getcomputername" },
+	{ ip, "ipconfig getifaddr en0" },
+	{ router, "networksetup -getinfo Wi-Fi | awk -F 'Router: ' '/^Router: / {print $2}'" },
+}
 
-wifi:subscribe({ "wifi_change", "system_woke" }, function(env)
-	sbar.exec("ipconfig getifaddr en0", function(ip)
-		local connected = not (ip == "")
+wifi:subscribe({ "wifi_change", "system_woke", "forced" }, function()
+	sbar.exec("ipconfig getifaddr en0", function(ip_address)
+		local connected = ip_address ~= ""
 		wifi:set({
 			icon = {
 				string = connected and icons.wifi.connected or icons.wifi.disconnected,
@@ -143,48 +63,32 @@ wifi:subscribe({ "wifi_change", "system_woke" }, function(env)
 	end)
 end)
 
-local function toggle_details()
-	local current_drawing = wifi_bracket:query().popup.drawing
-	local should_draw = current_drawing == "off"
-
-	-- Toggle popup visibility
-	wifi_bracket:set({ popup = { drawing = should_draw } })
-
-	-- If opening the popup, refresh the details
-	if should_draw then
-		sbar.exec("networksetup -getcomputername", function(result)
-			hostname:set({ label = result })
-		end)
-		sbar.exec("ipconfig getifaddr en0", function(result)
-			ip:set({ label = result })
-		end)
-		sbar.exec("ipconfig getsummary en0 | awk -F ' SSID : '  '/ SSID : / {print $2}'", function(result)
-			ssid:set({ label = result })
-		end)
-		sbar.exec("networksetup -getinfo Wi-Fi | awk -F 'Router: ' '/^Router: / {print $2}'", function(result)
-			router:set({ label = result })
+wifi:subscribe("mouse.entered", function()
+	if not ui.show_popup(wifi_bracket) then
+		return
+	end
+	for _, detail in ipairs(details) do
+		local item, cmd = detail[1], detail[2]
+		sbar.exec(cmd, function(result)
+			item:set({ label = (result:gsub("\n$", "")) })
 		end)
 	end
-end
+end)
 
-local function hide_details()
-	wifi_bracket:set({ popup = { drawing = false } })
-end
+wifi:subscribe("mouse.exited.global", function()
+	ui.hide_popup(wifi_bracket)
+end)
 
-wifi:subscribe("mouse.entered", toggle_details)
-wifi:subscribe("mouse.exited.global", hide_details)
--- wifi:subscribe("mouse.exited", hide_details)
-
-local function copy_label_to_clipboard(env)
-	local label = sbar.query(env.NAME).label.value
-	sbar.exec('echo "' .. label .. '" | pbcopy')
-	sbar.set(env.NAME, { label = { string = icons.clipboard, align = "center" } })
-	sbar.delay(1, function()
-		sbar.set(env.NAME, { label = { string = label, align = "right" } })
+-- Click a row to copy its value
+for _, detail in ipairs(details) do
+	local item = detail[1]
+	item:subscribe("mouse.clicked", function()
+		local label = item:query().label
+		local value, align = label.value, label.align
+		sbar.exec("printf %s '" .. value:gsub("'", "'\\''") .. "' | pbcopy")
+		item:set({ label = { string = icons.clipboard, align = "center" } })
+		sbar.delay(1, function()
+			item:set({ label = { string = value, align = align } })
+		end)
 	end)
 end
-
-ssid:subscribe("mouse.clicked", copy_label_to_clipboard)
-hostname:subscribe("mouse.clicked", copy_label_to_clipboard)
-ip:subscribe("mouse.clicked", copy_label_to_clipboard)
-router:subscribe("mouse.clicked", copy_label_to_clipboard)

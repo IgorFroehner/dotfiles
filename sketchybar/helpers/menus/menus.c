@@ -140,7 +140,8 @@ AXUIElementRef ax_get_extra_menu_item(char* alias) {
                        kCFStringEncodingUTF8);
     snprintf(buffer, sizeof(buffer), "%s,%s", owner_buffer, name_buffer);
 
-    if (strcmp(buffer, alias) == 0) {
+    // Prefix match: macOS 26 suffixes some names, e.g. "BentoBox" is now "BentoBox-0"
+    if (strncmp(buffer, alias, strlen(alias)) == 0) {
       pid = owner_pid;
       break;
     }
