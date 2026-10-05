@@ -65,6 +65,7 @@ end)
 
 -- Output devices are listed in the popup and rebuilt every time it opens
 local device_items = {}
+local hide_details
 
 local function clear_devices()
 	for _, item in ipairs(device_items) do
@@ -102,6 +103,7 @@ local function list_devices()
 				item:subscribe("mouse.clicked", function()
 					select_device(device, item)
 				end)
+				ui.hover_keep_open(volume_bracket, item, hide_details)
 				table.insert(device_items, item)
 			end
 		end)
@@ -115,13 +117,13 @@ local function show_details()
 	list_devices()
 end
 
-local function hide_details()
+function hide_details()
 	ui.hide_popup(volume_bracket)
 	clear_devices()
 end
 
-volume:subscribe("mouse.entered", show_details)
-volume:subscribe("mouse.exited.global", hide_details)
+ui.hover_popup(volume_bracket, volume, show_details, hide_details)
+ui.hover_keep_open(volume_bracket, slider, hide_details)
 
 volume:subscribe("mouse.clicked", function(env)
 	if env.BUTTON == "right" then

@@ -1,8 +1,11 @@
 import AppKit
 
-// Nord palette, matching colors.lua
+// Nord accents on neutral near-black surfaces, matching colors.lua
 enum Colors {
-    static let cardBackground = NSColor(hex: "3B4252")!.withAlphaComponent(0.95) // Nord1
+    static let panelBackground = NSColor(hex: "000000")!
+    static let panelBorder = NSColor(hex: "262626")!
+    static let cardBackground = NSColor(hex: "111111")!
+    static let cardBorder = NSColor(hex: "1F1F1F")!
 
     static let accent = NSColor(hex: "88C0D0")! // Nord8
     static let blue = NSColor(hex: "81A1C1")! // Nord9

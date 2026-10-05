@@ -76,8 +76,9 @@ struct SystemPanelView: View {
             .padding(.vertical, 10)
             .padding(.top, 25)
             
-            Divider()
-                .background(Color.white.opacity(0.1))
+            Rectangle()
+                .fill(Color(Colors.cardBorder))
+                .frame(height: 1)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 15)
         }
@@ -94,7 +95,7 @@ struct SystemPanelView: View {
                             .aspectRatio(contentMode: .fill)
                             .frame(maxWidth: .infinity)
                             .blur(radius: 10)
-                            .opacity(0.3)
+                            .opacity(0.12)
                     }
                     
                     // Content
@@ -150,26 +151,13 @@ struct SystemPanelView: View {
 
     var body: some View {
         ZStack {
-            // Blurred background using VisualEffectView
-            VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+            Color(Colors.panelBackground)
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 10) {
                 profileSection
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(Colors.cardBackground).opacity(0.5))
-                            .blur(radius: 15)
-                    )
-                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
 
                 mediaPlayerSection
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(Colors.cardBackground).opacity(0.5))
-                            .blur(radius: 15)
-                    )
-                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
 
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: 15), // Adjust spacing as needed
@@ -204,19 +192,13 @@ struct SystemPanelView: View {
                 }
                 .padding(.horizontal, 30)
                 .padding(.vertical, 20)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(Colors.cardBackground).opacity(0.5))
-                        .blur(radius: 15)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
             }
             .padding(.bottom, 25)
         }
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(Colors.green), lineWidth: 4)
+                .stroke(Color(Colors.panelBorder), lineWidth: 1)
         )
     }
     

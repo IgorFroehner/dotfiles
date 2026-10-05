@@ -32,10 +32,10 @@ end
 
 time:subscribe({ "forced", "routine", "system_woke" }, update)
 
-time:subscribe("mouse.clicked", function()
+-- Both labels toggle the calendar and weather panel
+local function toggle_panel()
 	ui.toggle_panel("date")
-end)
+end
 
-date:subscribe("mouse.clicked", function()
-	sbar.exec("open -a Calendar")
-end)
+time:subscribe("mouse.clicked", toggle_panel)
+date:subscribe("mouse.clicked", toggle_panel)

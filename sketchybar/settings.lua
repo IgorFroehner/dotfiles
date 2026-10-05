@@ -1,11 +1,11 @@
 return {
-	bar_height = 33,
+	bar_height = 38, -- matches the built-in display's notch height
 	bar_corner_radius = 0,
 	bar_padding = 0,
 	bar_margin = 0,
 	bar_blur_radius = 0,
 	bar_margin_padding = 18,
-	notch_width = 188,
+	notch_width = 221,
 
 	item_height = 20,
 	item_padding = 8,

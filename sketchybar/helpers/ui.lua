@@ -57,11 +57,58 @@ function ui.show_popup(item)
 	return true
 end
 
+function ui.is_open(item)
+	return open_popup == item
+end
+
 function ui.hide_popup(item)
 	item:set({ popup = { drawing = false } })
 	if open_popup == item then
 		open_popup = nil
 	end
+end
+
+-- Popups the mouse can move into (volume, wifi). mouse.exited.global alone is
+-- unreliable and leaves them stuck open, so leaving the trigger or any popup row
+-- starts a short grace period, and entering one of them again cancels it.
+local HOVER_GRACE = 0.3
+local hover_generation = {}
+
+local function hover_cancel(owner)
+	hover_generation[owner.name] = (hover_generation[owner.name] or 0) + 1
+end
+
+local function hover_leave(owner, on_hide)
+	hover_cancel(owner)
+	local generation = hover_generation[owner.name]
+	sbar.delay(HOVER_GRACE, function()
+		if hover_generation[owner.name] == generation then
+			on_hide()
+		end
+	end)
+end
+
+-- Shows `owner`'s popup while the mouse is over `trigger` or a row registered with
+-- ui.hover_keep_open. `on_show` and `on_hide` open and close it.
+function ui.hover_popup(owner, trigger, on_show, on_hide)
+	trigger:subscribe("mouse.entered", function()
+		hover_cancel(owner)
+		on_show()
+	end)
+	trigger:subscribe("mouse.exited", function()
+		hover_leave(owner, on_hide)
+	end)
+	trigger:subscribe("mouse.exited.global", on_hide)
+end
+
+-- Keeps `owner`'s popup open while the mouse is over `item`, one of its rows.
+function ui.hover_keep_open(owner, item, on_hide)
+	item:subscribe("mouse.entered", function()
+		hover_cancel(owner)
+	end)
+	item:subscribe("mouse.exited", function()
+		hover_leave(owner, on_hide)
+	end)
 end
 
 -- A "Title:      value" row inside a popup.

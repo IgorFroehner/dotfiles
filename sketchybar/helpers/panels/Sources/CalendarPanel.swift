@@ -6,12 +6,10 @@ struct CalendarPanelView: View {
 
     var body: some View {
         ZStack {
-            // Blurred background using VisualEffectView
-            VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+            Color(Colors.panelBackground)
                 .edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 16) {
-                // Calendar section with blur and shadow
                 Card(
                     content: AnyView(
                         CalendarView()
@@ -21,45 +19,18 @@ struct CalendarPanelView: View {
                     padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0),
                     backgroundImage: nil
                 )
-                .padding(.horizontal, 30)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(Colors.cardBackground).opacity(0.5))
-                        .blur(radius: 10)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
 
-                // Clock section with blur and shadow
-                Card(
-                    content: AnyView(ClockView()),
-                    backgroundColor: Color(Colors.cardBackground),
-                    padding: EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0),
-                    backgroundImage: nil
-                )
-                .padding(.horizontal, 30)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(Colors.cardBackground).opacity(0.5))
-                        .blur(radius: 10)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
+                ClockView()
 
-                // Weather section with shadow
                 WeatherView(weatherController: weatherController)
-                    .padding(.horizontal, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(Colors.cardBackground).opacity(0.5))
-                            .blur(radius: 10)
-                    )
-                    .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 2)
             }
+            .padding(.horizontal, 30)
             .padding(.vertical, 30)
         }
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(Colors.green), lineWidth: 4)
+                .stroke(Color(Colors.panelBorder), lineWidth: 1)
         )
     }
 }
@@ -205,7 +176,6 @@ struct ClockView: View {
                     Image(systemName: "clock.fill")
                         .font(.system(size: 32))
                         .foregroundColor(.white)
-                        .padding(.leading, -20) // Add padding to move it towards the border
 
                     Spacer()
 
@@ -213,14 +183,12 @@ struct ClockView: View {
                     Text(currentTime)
                         .font(.system(size: 32, weight: .medium))
                         .foregroundColor(.white)
-                        .padding(.trailing, -20) // Add padding to move it towards the border
                 }
             ),
             backgroundColor: Color(Colors.cardBackground),
             padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20),
             backgroundImage: nil
         )
-        .padding(.horizontal, 20)
         .onAppear(perform: updateTime)
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
             updateTime()
@@ -265,6 +233,5 @@ struct WeatherView: View {
             padding: EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20),
             backgroundImage: nil
         )
-        .padding(.horizontal, 20)
     }
 }

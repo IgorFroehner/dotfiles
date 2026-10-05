@@ -1,24 +1,6 @@
 import AppKit
 import SwiftUI
 
-struct VisualEffectView: NSViewRepresentable {
-    let material: NSVisualEffectView.Material
-    let blendingMode: NSVisualEffectView.BlendingMode
-
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let visualEffectView = NSVisualEffectView()
-        visualEffectView.material = material
-        visualEffectView.blendingMode = blendingMode
-        visualEffectView.state = .active
-        return visualEffectView
-    }
-
-    func updateNSView(_ visualEffectView: NSVisualEffectView, context: Context) {
-        visualEffectView.material = material
-        visualEffectView.blendingMode = blendingMode
-    }
-}
-
 // Ring gauge with an icon and a percentage
 struct CircularProgressView: View {
     let progress: Double
@@ -29,6 +11,10 @@ struct CircularProgressView: View {
     var body: some View {
         VStack(spacing: 15) {
             ZStack {
+                Circle()
+                    .stroke(color.opacity(0.15), lineWidth: 6)
+                    .frame(width: 50, height: 50)
+
                 Circle()
                     .trim(from: 0, to: CGFloat(progress))
                     .stroke(color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
@@ -49,6 +35,7 @@ struct CircularProgressView: View {
         .frame(width: 110, height: 110)
         .background(Color(Colors.cardBackground))
         .cornerRadius(12)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(Colors.cardBorder), lineWidth: 1))
     }
 }
 
@@ -98,6 +85,7 @@ struct Card: View {
         }
         .background(backgroundImage == nil ? backgroundColor : Color.clear)
         .cornerRadius(12)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(Colors.cardBorder), lineWidth: 1))
     }
 }
 
@@ -115,6 +103,7 @@ struct ActionButton: View {
                 .frame(width: 30, height: 30)
                 .background(Color(Colors.cardBackground))
                 .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(Colors.cardBorder), lineWidth: 1))
         }
         .buttonStyle(.plain)
         .onHover { inside in

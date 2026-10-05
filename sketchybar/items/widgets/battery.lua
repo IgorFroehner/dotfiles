@@ -62,7 +62,7 @@ battery:subscribe({ "routine", "forced", "power_source_change", "system_woke" },
 	end)
 end)
 
-battery:subscribe("mouse.entered", function()
+local function show_details()
 	ui.show_popup(battery)
 	sbar.exec("pmset -g batt", function(info)
 		local charge, _, remaining = parse_pmset(info)
@@ -70,8 +70,11 @@ battery:subscribe("mouse.entered", function()
 		local time_label = remaining and remaining:gsub(":", ".") .. "hrs" or "00:00"
 		remaining_time:set({ label = time_label .. " Remaining (" .. charge_label .. ")" })
 	end)
-end)
+end
 
-battery:subscribe({ "mouse.exited", "mouse.exited.global" }, function()
+local function hide_details()
 	ui.hide_popup(battery)
-end)
+end
+
+ui.hover_popup(battery, battery, show_details, hide_details)
+ui.hover_keep_open(battery, remaining_time, hide_details)
