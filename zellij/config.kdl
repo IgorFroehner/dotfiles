@@ -270,6 +270,41 @@ plugins {
     welcome-screen location="zellij:session-manager" {
         welcome_screen false
     }
+
+    // Single top bar: session + tabs on the left, mode + key hints on the right.
+    // Colors follow black-nord / sketchybar.
+    zjstatus location="https://github.com/dj95/zjstatus/releases/download/v0.25.0/zjstatus.wasm" {
+        format_left   "#[fg=#81a1c1,bold] {session} #[fg=#3a3a3a]│ {tabs}"
+        format_right  "{mode}"
+        format_space  ""
+        format_hide_on_overlength "true"
+        format_precedence "lrc"
+
+        border_enabled "false"
+        hide_frame_for_single_pane "true"
+
+        tab_normal   "#[fg=#5a5a5a] {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
+        tab_active   "#[bg=#1f1f1f,fg=#eceff4,bold] {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
+        tab_separator " "
+        tab_floating_indicator   " ◫"
+        tab_fullscreen_indicator " ⤢"
+        tab_sync_indicator       " ⇄"
+
+        mode_normal       "#[fg=#a4a4a4]^p #[fg=#5a5a5a]pane  #[fg=#a4a4a4]^t #[fg=#5a5a5a]tab  #[fg=#a4a4a4]^s #[fg=#5a5a5a]scroll  #[fg=#a4a4a4]^o #[fg=#5a5a5a]session  #[fg=#a4a4a4]^g #[fg=#5a5a5a]lock "
+        mode_locked       "#[bg=#bf616a,fg=#000000,bold] LOCKED #[fg=#a4a4a4] ^g #[fg=#5a5a5a]unlock "
+        mode_pane         "#[bg=#88c0d0,fg=#000000,bold] PANE #[fg=#a4a4a4] n #[fg=#5a5a5a]new  #[fg=#a4a4a4]d/r #[fg=#5a5a5a]split  #[fg=#a4a4a4]x #[fg=#5a5a5a]close  #[fg=#a4a4a4]f #[fg=#5a5a5a]full  #[fg=#a4a4a4]w #[fg=#5a5a5a]float  #[fg=#a4a4a4]c #[fg=#5a5a5a]rename "
+        mode_tab          "#[bg=#81a1c1,fg=#000000,bold] TAB #[fg=#a4a4a4] n #[fg=#5a5a5a]new  #[fg=#a4a4a4]x #[fg=#5a5a5a]close  #[fg=#a4a4a4]r #[fg=#5a5a5a]rename  #[fg=#a4a4a4]h/l #[fg=#5a5a5a]switch  #[fg=#a4a4a4]b #[fg=#5a5a5a]break  #[fg=#a4a4a4]s #[fg=#5a5a5a]sync "
+        mode_resize       "#[bg=#d08770,fg=#000000,bold] RESIZE #[fg=#a4a4a4] hjkl #[fg=#5a5a5a]grow  #[fg=#a4a4a4]HJKL #[fg=#5a5a5a]shrink "
+        mode_move         "#[bg=#d08770,fg=#000000,bold] MOVE #[fg=#a4a4a4] hjkl #[fg=#5a5a5a]move  #[fg=#a4a4a4]n/p #[fg=#5a5a5a]cycle "
+        mode_scroll       "#[bg=#ebcb8b,fg=#000000,bold] SCROLL #[fg=#a4a4a4] j/k #[fg=#5a5a5a]line  #[fg=#a4a4a4]d/u #[fg=#5a5a5a]half page  #[fg=#a4a4a4]s #[fg=#5a5a5a]search  #[fg=#a4a4a4]e #[fg=#5a5a5a]edit "
+        mode_enter_search "#[bg=#ebcb8b,fg=#000000,bold] SEARCH #[fg=#a4a4a4] enter #[fg=#5a5a5a]confirm  #[fg=#a4a4a4]esc #[fg=#5a5a5a]cancel "
+        mode_search       "#[bg=#ebcb8b,fg=#000000,bold] SEARCH #[fg=#a4a4a4] n/p #[fg=#5a5a5a]next/prev  #[fg=#a4a4a4]c #[fg=#5a5a5a]case  #[fg=#a4a4a4]w #[fg=#5a5a5a]wrap  #[fg=#a4a4a4]o #[fg=#5a5a5a]word "
+        mode_session      "#[bg=#b48ead,fg=#000000,bold] SESSION #[fg=#a4a4a4] d #[fg=#5a5a5a]detach  #[fg=#a4a4a4]w #[fg=#5a5a5a]sessions  #[fg=#a4a4a4]c #[fg=#5a5a5a]config  #[fg=#a4a4a4]p #[fg=#5a5a5a]plugins "
+        mode_tmux         "#[bg=#a3be8c,fg=#000000,bold] TMUX #[fg=#a4a4a4] % #[fg=#5a5a5a]right  #[fg=#a4a4a4]\" #[fg=#5a5a5a]down  #[fg=#a4a4a4]c #[fg=#5a5a5a]tab  #[fg=#a4a4a4]z #[fg=#5a5a5a]zoom  #[fg=#a4a4a4]d #[fg=#5a5a5a]detach "
+        mode_rename_tab   "#[bg=#eceff4,fg=#000000,bold] RENAME TAB #[fg=#a4a4a4] enter #[fg=#5a5a5a]confirm  #[fg=#a4a4a4]esc #[fg=#5a5a5a]undo "
+        mode_rename_pane  "#[bg=#eceff4,fg=#000000,bold] RENAME PANE #[fg=#a4a4a4] enter #[fg=#5a5a5a]confirm  #[fg=#a4a4a4]esc #[fg=#5a5a5a]undo "
+        mode_prompt       "#[bg=#ebcb8b,fg=#000000,bold] PROMPT "
+    }
 }
 
 // Plugins to load in the background when a new session starts
@@ -288,7 +323,14 @@ load_plugins {
 // Choose the theme that is specified in the themes section.
 // Default: default
 // 
-theme "onedark"
+theme "black-nord"
+
+// Rounded pane borders
+ui {
+    pane_frames {
+        rounded_corners true
+    }
+}
  
 // Choose the base input mode of zellij.
 // Default: normal
