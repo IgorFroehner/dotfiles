@@ -18,14 +18,6 @@ local function add_space(i)
 		background = {
 			color = colors.transparent,
 		},
-		popup = {
-			background = {
-				border_width = settings.popup_border_width,
-				border_color = colors.popup.border,
-				corner_radius = settings.popup_border_radius,
-				drawing = true,
-			},
-		},
 	})
 
 	-- 2px gap after each space (fixed-width items ignore padding)

@@ -8,15 +8,15 @@ sbar.default({
 	icon = {
 		font = style.font("icons", "Regular"),
 		color = colors.white,
-		padding_left = settings.paddings,
-		padding_right = settings.paddings,
+		padding_left = settings.default_padding,
+		padding_right = settings.default_padding,
 		background = { image = { corner_radius = settings.item_corner_radius } },
 	},
 	label = {
 		font = style.font("text", "Bold"),
 		color = colors.white,
-		padding_left = settings.paddings,
-		padding_right = settings.paddings,
+		padding_left = settings.default_padding,
+		padding_right = settings.default_padding,
 	},
 	background = {
 		height = settings.item_height,
@@ -43,7 +43,7 @@ sbar.default({
 		blur_radius = settings.popup_blur_radius,
 		y_offset = settings.popup_y_offset,
 	},
-	padding_left = settings.paddings,
-	padding_right = settings.paddings,
+	padding_left = settings.default_padding,
+	padding_right = settings.default_padding,
 	scroll_texts = true,
 })

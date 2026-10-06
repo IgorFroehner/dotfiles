@@ -24,6 +24,7 @@ local interface = ui.popup_row(vpn.name, "Interface:", { width = POPUP_WIDTH })
 local ip = ui.popup_row(vpn.name, "IP:", { width = POPUP_WIDTH })
 local server = ui.popup_row(vpn.name, "Server:", { width = POPUP_WIDTH })
 local uptime = ui.popup_row(vpn.name, "Uptime:", { width = POPUP_WIDTH })
+local rows = { profile, interface, ip, server, uptime }
 local pritunl_rows = { profile, server, uptime }
 
 -- Any VPN client (OpenVPN, WireGuard, ...) brings up a utun interface with an IPv4
@@ -67,12 +68,23 @@ local function format_uptime(timestamp)
 	return string.format("%dm", minutes)
 end
 
+-- The tunnel's address, or else the one Pritunl assigned (without the prefix length)
+local function vpn_ip()
+	if tunnel then
+		return tunnel.address
+	end
+	if pritunl and pritunl.client_addr then
+		return (pritunl.client_addr:gsub("/%d+$", ""))
+	end
+	return "-"
+end
+
 local function show_details()
 	if not ui.show_popup(vpn) then
 		return
 	end
 	interface:set({ label = tunnel and tunnel.iface or "-" })
-	ip:set({ label = tunnel and tunnel.address or (pritunl and pritunl.client_addr and pritunl.client_addr:gsub("/%d+$", "")) or "-" })
+	ip:set({ label = vpn_ip() })
 
 	for _, row in ipairs(pritunl_rows) do
 		row:set({ drawing = pritunl ~= nil })
@@ -124,6 +136,6 @@ end
 vpn:subscribe({ "routine", "forced", "wifi_change", "system_woke" }, update)
 
 ui.hover_popup(vpn, vpn, show_details, hide_details)
-for _, row in ipairs({ profile, interface, ip, server, uptime }) do
+for _, row in ipairs(rows) do
 	ui.hover_keep_open(vpn, row, hide_details)
 end

@@ -11,7 +11,7 @@ return {
 	item_padding = 8,
 	item_corner_radius = 4,
 	item_spacing = 6,
-	paddings = 0,
+	default_padding = 0,
 
 	popup_border_width = 2,
 	popup_border_radius = 4,

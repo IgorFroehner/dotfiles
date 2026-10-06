@@ -1,10 +1,8 @@
 local settings = require("settings")
 local style = require("helpers.style")
+local paths = require("helpers.paths")
 
 local ui = {}
-
-local MENUS_BIN = "$CONFIG_DIR/helpers/menus/bin/menus"
-local PANEL_BIN = "$CONFIG_DIR/helpers/panels/bin/sbar_panel"
 
 -- Fixed-width gap between item groups.
 function ui.spacer(name, position)
@@ -17,7 +15,7 @@ end
 
 -- click_script that clicks a macOS menu bar extra, e.g. "Control Center,WiFi".
 function ui.menu_extra(alias)
-	return MENUS_BIN .. " -s '" .. alias .. "'"
+	return paths.menus .. " -s '" .. alias .. "'"
 end
 
 -- Open the given Swift panel ("menu" or "date"), or close it if it is already open.
@@ -29,7 +27,7 @@ function ui.toggle_panel(panel)
 	local city = (settings.weather_city or ""):gsub("'", "'\\''")
 	sbar.exec(
 		"P="
-			.. PANEL_BIN
+			.. paths.panel
 			.. "; pkill -f '[s]bar_panel app="
 			.. panel
 			.. "' || WEATHER_CITY='"

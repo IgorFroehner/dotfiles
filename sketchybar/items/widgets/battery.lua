@@ -67,8 +67,8 @@ local function show_details()
 	sbar.exec("pmset -g batt", function(info)
 		local charge, _, remaining = parse_pmset(info)
 		local charge_label = charge and charge .. "%" or "Unknown"
-		local time_label = remaining and remaining:gsub(":", ".") .. "hrs" or "00:00"
-		remaining_time:set({ label = time_label .. " Remaining (" .. charge_label .. ")" })
+		local time_label = remaining and remaining:gsub(":", ".") .. "hrs Remaining" or "No estimate"
+		remaining_time:set({ label = time_label .. " (" .. charge_label .. ")" })
 	end)
 end
 

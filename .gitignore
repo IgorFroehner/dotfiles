@@ -1,2 +1,4 @@
 .zsh_secrets
 karabiner/automatic_backups/
+*.bak
+*.bak.*

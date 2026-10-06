@@ -1,10 +1,10 @@
 local colors = require("colors")
 local icons = require("icons")
 local settings = require("settings")
+local paths = require("helpers.paths")
 local style = require("helpers.style")
 
 local MAX_ITEMS = 7
-local MENUS_BIN = "$CONFIG_DIR/helpers/menus/bin/menus"
 local STAGGER = 0.03
 
 -- Item 1 is the app's Apple menu and gets a chevron, the rest show menu titles
@@ -23,7 +23,7 @@ for i = 1, MAX_ITEMS do
 			color = colors.quicksilver,
 			padding_right = settings.item_spacing,
 		},
-		click_script = MENUS_BIN .. " -s " .. i,
+		click_script = paths.menus .. " -s " .. i,
 	})
 end
 
@@ -48,7 +48,7 @@ local function show_menus()
 	-- Pin the menus to the focused window's space
 	sbar.exec("yabai -m query --windows --window | jq -r '.space'", function(space)
 		space = tonumber(space)
-		sbar.exec(MENUS_BIN .. " -l", function(menus)
+		sbar.exec(paths.menus .. " -l", function(menus)
 			if current ~= generation then
 				return
 			end

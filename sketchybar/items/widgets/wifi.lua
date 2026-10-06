@@ -1,10 +1,12 @@
 local icons = require("icons")
 local colors = require("colors")
 local settings = require("settings")
+local paths = require("helpers.paths")
 local style = require("helpers.style")
 local ui = require("helpers.ui")
 
 local POPUP_WIDTH = 200
+local IFACE = "en0" -- the Wi-Fi interface
 
 local wifi = sbar.add("item", "widgets.wifi", {
 	position = "right",
@@ -43,18 +45,18 @@ local upload = ui.popup_row(wifi_bracket.name, "Upload:", { width = POPUP_WIDTH 
 
 -- macOS redacts the SSID from ipconfig/system_profiler; the SSID helper app reads it with
 -- Location Services permission. It's launched through `open` so the permission is its own.
-local SSID_CMD = 'F=$(mktemp); open -W -n --stdout "$F" "$CONFIG_DIR/helpers/ssid/bin/SSID.app"; cat "$F"; rm -f "$F"'
+local SSID_CMD = 'F=$(mktemp); open -W -n --stdout "$F" "' .. paths.ssid .. '"; cat "$F"; rm -f "$F"'
 
 -- Each popup row and the command that fills it
 local details = {
 	{ ssid, SSID_CMD },
 	{ hostname, "networksetup -getcomputername" },
-	{ ip, "ipconfig getifaddr en0" },
+	{ ip, "ipconfig getifaddr " .. IFACE },
 	{ router, "networksetup -getinfo Wi-Fi | awk -F 'Router: ' '/^Router: / {print $2}'" },
 }
 
--- Bytes in and out of en0 since boot
-local TRAFFIC_CMD = "netstat -ibn -I en0 | awk '/<Link/ {print $7, $10; exit}'"
+-- Bytes in and out of IFACE since boot
+local TRAFFIC_CMD = "netstat -ibn -I " .. IFACE .. " | awk '/<Link/ {print $7, $10; exit}'"
 local TRAFFIC_INTERVAL = 1
 
 local function format_bytes(bytes)
@@ -93,7 +95,7 @@ local function poll_traffic(generation, previous_in, previous_out)
 end
 
 wifi:subscribe({ "wifi_change", "system_woke", "forced" }, function()
-	sbar.exec("ipconfig getifaddr en0", function(ip_address)
+	sbar.exec("ipconfig getifaddr " .. IFACE, function(ip_address)
 		local connected = ip_address ~= ""
 		wifi:set({
 			icon = {
