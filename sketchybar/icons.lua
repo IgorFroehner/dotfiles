@@ -25,6 +25,7 @@ return {
 		disconnected = "􀙈",
 		router = "􁓤",
 	},
+	vpn = "􀎡",
 	spotify = {
 		play = "􀊅",
 		pause = "􀊃",
