@@ -29,7 +29,7 @@ themes {
             base 164 164 164
             background 31 31 31
             emphasis_0 191 97 106
-            emphasis_1 236 239 244
+            emphasis_1 58 58 58 // hover background in the built-in tab-bar
             emphasis_2 129 161 193
             emphasis_3 180 142 173
         }
