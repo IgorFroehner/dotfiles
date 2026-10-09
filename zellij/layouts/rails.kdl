@@ -5,30 +5,30 @@ layout {
         }
         children
     }
-    tab name="#1 nvim" {
+    tab name="nvim" {
         pane {
             command "nvim"
             args "."
         }
     }
-    tab name="#2 AI" {
+    tab name="AI" {
         pane stacked=true {
             pane
         }
     }
-    tab name="#3 terminals" {
+    tab name="terminals" {
         pane split_direction="vertical" {
             pane
             pane 
         }
     }
-    tab name="#4 rails" {
+    tab name="rails" {
         pane {
             command "bin/dev"
             start_suspended true
         }
     }
-    tab name="#5 docker" {
+    tab name="docker" {
         pane {
             command "bash"
             args "-c" "trap 'docker-compose down' EXIT; docker-compose up"

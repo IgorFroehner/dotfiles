@@ -15,7 +15,7 @@ keybinds clear-defaults=true {
         bind "Ctrl Shift j" { MoveFocus "down"; }
         bind "Ctrl Shift k" { MoveFocus "up"; }
         bind "Ctrl Shift l" { MoveFocusOrTab "right"; }
-        bind "Ctrl Shift n" { NewTab; SwitchToMode "normal"; }
+        bind "Ctrl Shift n" { NewTab { name "terminal"; }; SwitchToMode "normal"; }
         bind "Ctrl Shift w" { CloseTab; SwitchToMode "normal"; }
     }
     locked {
@@ -63,7 +63,7 @@ keybinds clear-defaults=true {
         bind "j" { GoToNextTab; }
         bind "k" { GoToPreviousTab; }
         bind "l" { GoToNextTab; }
-        bind "n" { NewTab; SwitchToMode "normal"; }
+        bind "n" { NewTab { name "terminal"; }; SwitchToMode "normal"; }
         bind "r" { SwitchToMode "renametab"; TabNameInput 0; }
         bind "s" { ToggleActiveSyncTab; SwitchToMode "normal"; }
         bind "Ctrl t" { SwitchToMode "normal"; }
@@ -241,7 +241,7 @@ keybinds clear-defaults=true {
         bind "," { SwitchToMode "renametab"; }
         bind "[" { SwitchToMode "scroll"; }
         bind "Ctrl b" { Write 2; SwitchToMode "normal"; }
-        bind "c" { NewTab; SwitchToMode "normal"; }
+        bind "c" { NewTab { name "terminal"; }; SwitchToMode "normal"; }
         bind "h" { MoveFocus "left"; SwitchToMode "normal"; }
         bind "j" { MoveFocus "down"; SwitchToMode "normal"; }
         bind "k" { MoveFocus "up"; SwitchToMode "normal"; }
@@ -283,8 +283,8 @@ plugins {
         border_enabled "false"
         hide_frame_for_single_pane "true"
 
-        tab_normal   "#[fg=#5a5a5a] {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
-        tab_active   "#[bg=#1f1f1f,fg=#eceff4,bold] {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
+        tab_normal   "#[fg=#5a5a5a] #{index} {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
+        tab_active   "#[bg=#1f1f1f,fg=#eceff4,bold] #{index} {name}{floating_indicator}{fullscreen_indicator}{sync_indicator} "
         tab_separator " "
         tab_floating_indicator   " ◫"
         tab_fullscreen_indicator " ⤢"
@@ -353,8 +353,9 @@ ui {
  
 // The folder in which Zellij will look for layouts
 // (Requires restart)
+// Default: <config dir>/layouts. `~` is not expanded here, so leave it unset.
 // 
-layout_dir "~/.config/zellij/layouts"
+// layout_dir "/path/to/my/layout_dir"
  
 // The folder in which Zellij will look for themes
 // (Requires restart)

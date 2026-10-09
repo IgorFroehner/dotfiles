@@ -5,13 +5,13 @@ layout {
         }
         children
     }
-    tab name="#1 nvim" focus=true {
+    tab name="nvim" focus=true {
         pane {
             command "nvim"
             args "."
         }
     }
-    tab name="#2 terminal" {
+    tab name="terminal" {
         pane
     }
 }
