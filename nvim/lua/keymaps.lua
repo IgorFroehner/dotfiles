@@ -42,3 +42,30 @@ vim.api.nvim_create_autocmd("CmdlineEnter", {
 vim.api.nvim_create_autocmd("TermEnter", {
 	callback = disable_reader_mode,
 })
+
+-- Buffer switching without barbar; with ide_layout barbar's own maps take over these keys
+if not vim.g.ide_layout then
+	vim.keymap.set("n", "<C-,>", "<Cmd>bprevious<CR>", { desc = "Previous buffer" })
+	vim.keymap.set("n", "<C-.>", "<Cmd>bnext<CR>", { desc = "Next buffer" })
+
+	-- Close the buffer but keep its window: show the alternate (or an empty) buffer first
+	local function close_buffer()
+		local buf = vim.api.nvim_get_current_buf()
+		if vim.bo[buf].modified then
+			vim.notify("Buffer has unsaved changes", vim.log.levels.WARN)
+			return
+		end
+		local alt = vim.fn.bufnr("#")
+		if alt > 0 and alt ~= buf and vim.fn.buflisted(alt) == 1 then
+			vim.cmd.buffer(alt)
+		else
+			vim.cmd.enew()
+		end
+		if vim.api.nvim_buf_is_valid(buf) then
+			vim.cmd.bdelete(buf)
+		end
+	end
+
+	vim.keymap.set("n", "<leader>w", close_buffer, { desc = "Close buffer" })
+	vim.keymap.set("n", "<leader>W", "<Cmd>%bdelete|edit #|bdelete #<CR>", { desc = "Close other buffers" })
+end

@@ -27,6 +27,18 @@ return {
 					},
 				},
 				pickers = {
+					-- Open buffers, most recently used first: replaces barbar's tab list
+					buffers = {
+						sort_mru = true,
+						ignore_current_buffer = true,
+						mappings = {
+							i = { ["<C-d>"] = "delete_buffer" },
+							n = { ["dd"] = "delete_buffer" },
+						},
+					},
+					oldfiles = {
+						only_cwd = true,
+					},
 					find_files = {
 						hidden = true,
 						-- needed to exclude some files & dirs from general search
@@ -51,6 +63,9 @@ return {
 
 			vim.keymap.set("n", "<D-p>", builtin.find_files, {})
 			vim.keymap.set("n", "<D-F>", builtin.live_grep, {})
+			vim.keymap.set("n", "<D-e>", builtin.buffers, { desc = "Open buffers" })
+			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "Open buffers" })
+			vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Recent files in project" })
 		end,
 	},
 	{

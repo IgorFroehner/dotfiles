@@ -19,11 +19,12 @@ return {
 				},
 			})
 
-			vim.keymap.set("n", "<C-n>", ":Neotree filesystem reveal left<CR>")
+			vim.keymap.set("n", "<C-n>", ":Neotree filesystem reveal left toggle<CR>")
 		end,
 	},
 	{
 		"romgrk/barbar.nvim",
+		cond = vim.g.ide_layout,
 		dependencies = {
 			"lewis6991/gitsigns.nvim",
 			"nvim-tree/nvim-web-devicons",
