@@ -175,10 +175,8 @@ eval "$(zoxide init zsh)"
 export PATH="$HOME/.opencode/bin:$PATH"
 
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
-alias claude-work2="CLAUDE_CONFIG_DIR=~/.claude-word2 claude"
 alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
 alias cw="claude-work"
-alias cw2="claude-work2"
 alias cper="claude-personal"
 
 # `zj [layout]` opens a zellij session with ~/.config/zellij/layouts/<layout>.kdl
