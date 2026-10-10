@@ -31,8 +31,8 @@ local function ruby_lsp_cmd(root_dir)
 end
 
 return {
-  cmd = ruby_lsp_cmd(),
-  on_new_config = function(config, root_dir)
-    config.cmd = ruby_lsp_cmd(root_dir)
+  -- Resolve the command per root_dir at spawn time; vim.lsp.config has no on_new_config hook.
+  cmd = function(dispatchers, config)
+    return vim.lsp.rpc.start(ruby_lsp_cmd(config.root_dir), dispatchers, { cwd = config.root_dir })
   end,
 }
