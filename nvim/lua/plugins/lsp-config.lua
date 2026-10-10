@@ -81,13 +81,9 @@ return {
 		-- keybindings
 		local telescope_builtin = require("telescope.builtin")
 
-		vim.keymap.set("n", "<S-k>", vim.lsp.buf.hover, { noremap = true, silent = true, desc = "LSP Hover" })
+		-- K (hover), grn (rename) and gra (code action) are nvim built-ins; only override where Telescope is nicer
 		vim.keymap.set("n", "gd", telescope_builtin.lsp_definitions, { noremap = true, silent = true, desc = "Go to definition" })
-		vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true, desc = "Code action" })
-
-		vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { noremap = true, silent = true, desc = "Rename" })
-
-		vim.keymap.set("n", "<leader>gr", telescope_builtin.lsp_references, { noremap = true, silent = true, desc = "References" })
+		vim.keymap.set("n", "grr", telescope_builtin.lsp_references, { noremap = true, silent = true, desc = "References" })
 		end,
 	},
 }

@@ -1,11 +1,23 @@
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to down window" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to up window" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+-- Ctrl+hjkl: move between splits; at the edge, hand off to zellij panes (vim-zellij-navigator
+-- sends these keys to nvim when it is focused). h/l continue into the next tab, like zellij's Alt+h/l.
+local function navigate(wincmd, zellij_action, direction)
+	return function()
+		local win = vim.api.nvim_get_current_win()
+		vim.cmd.wincmd(wincmd)
+		if vim.api.nvim_get_current_win() == win and vim.env.ZELLIJ then
+			vim.system({ "zellij", "action", zellij_action, direction })
+		end
+	end
+end
+
+vim.keymap.set("n", "<C-h>", navigate("h", "move-focus-or-tab", "left"), { desc = "Go to left window or pane" })
+vim.keymap.set("n", "<C-j>", navigate("j", "move-focus", "down"), { desc = "Go to down window or pane" })
+vim.keymap.set("n", "<C-k>", navigate("k", "move-focus", "up"), { desc = "Go to up window or pane" })
+vim.keymap.set("n", "<C-l>", navigate("l", "move-focus-or-tab", "right"), { desc = "Go to right window or pane" })
 
 vim.keymap.set({"n", "v"}, "<leader>y", '"+y', { desc = "Yank to clipboard" })
 
-vim.keymap.set("n", "<leader>yf", function()
+vim.keymap.set("n", "<leader>fn", function()
 	vim.fn.setreg("+", vim.fn.expand("%:t"))
 end, { desc = "Copy filename to clipboard" })
 
@@ -20,7 +32,7 @@ local function disable_reader_mode()
 	vim.notify("Reader mode OFF")
 end
 
-vim.keymap.set("n", "<leader>zr", function()
+vim.keymap.set("n", "<leader>tr", function()
 	if reader_mode then
 		disable_reader_mode()
 	else

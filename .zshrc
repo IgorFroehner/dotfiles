@@ -153,8 +153,12 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-bindkey '^j' up-line-or-beginning-search
-bindkey '^k' down-line-or-beginning-search
+# Ctrl+hjkl belong to zellij/nvim navigation (see KEYMAP.md)
+bindkey '^p' up-line-or-beginning-search
+bindkey '^n' down-line-or-beginning-search
+# Option+←/→ word jump (Ghostty sends Alt+arrows with macos-option-as-alt)
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
 
 # bun
 export BUN_INSTALL="$HOME/.bun"

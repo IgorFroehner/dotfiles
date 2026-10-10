@@ -47,7 +47,7 @@ return {
 				},
 			})
 
-			vim.keymap.set("n", "<leader>com", ":CodeCompanionChat Toggle<CR>", {})
+			vim.keymap.set("n", "<leader>ac", ":CodeCompanionChat Toggle<CR>", { desc = "CodeCompanion chat" })
 		end,
 	},
 }

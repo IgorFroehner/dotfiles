@@ -7,8 +7,42 @@ macos-titlebar-style=transparent
 window-decoration = none
 macos-titlebar-style = hidden
 
-keybind = super+shift+l=next_tab
-keybind = super+shift+h=previous_tab
-keybind = super+shift+left_bracket=text:\x1b[104;6u
-keybind = super+shift+right_bracket=text:\x1b[108;6u
+# Left Option is Alt (zellij layer); right Option still types special characters
+macos-option-as-alt = left
+
+# macOS tab conventions -> zellij Alt chords (kitty CSI-u). See KEYMAP.md.
+# prev / next tab (Alt+[ / Alt+])
+keybind = super+shift+left_bracket=text:\x1b[91;3u
+keybind = super+shift+right_bracket=text:\x1b[93;3u
+keybind = ctrl+shift+tab=text:\x1b[91;3u
+keybind = ctrl+tab=text:\x1b[93;3u
+
+# go to tab N (Alt+1..9)
+keybind = super+1=text:\x1b[49;3u
+keybind = super+digit_1=text:\x1b[49;3u
+keybind = super+2=text:\x1b[50;3u
+keybind = super+digit_2=text:\x1b[50;3u
+keybind = super+3=text:\x1b[51;3u
+keybind = super+digit_3=text:\x1b[51;3u
+keybind = super+4=text:\x1b[52;3u
+keybind = super+digit_4=text:\x1b[52;3u
+keybind = super+5=text:\x1b[53;3u
+keybind = super+digit_5=text:\x1b[53;3u
+keybind = super+6=text:\x1b[54;3u
+keybind = super+digit_6=text:\x1b[54;3u
+keybind = super+7=text:\x1b[55;3u
+keybind = super+digit_7=text:\x1b[55;3u
+keybind = super+8=text:\x1b[56;3u
+keybind = super+digit_8=text:\x1b[56;3u
+keybind = super+9=text:\x1b[57;3u
+keybind = super+digit_9=text:\x1b[57;3u
+
+# new tab (Alt+t), close pane (Alt+x), close window (zellij detaches)
+keybind = super+t=text:\x1b[116;3u
+keybind = super+w=text:\x1b[120;3u
+keybind = super+shift+w=close_window
+
+# split right / down (Alt+v / Alt+s)
+keybind = super+d=text:\x1b[118;3u
+keybind = super+shift+d=text:\x1b[115;3u
 
