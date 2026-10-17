@@ -1,7 +1,8 @@
-
 # Dotfiles (macOS)
 
 Personal macOS dotfiles for a tiling + terminal-focused workflow.
+
+<img width="3600" height="2338" alt="Screenshot 2026-10-17 at 18 17 39" src="https://github.com/user-attachments/assets/e9a976d0-d0a7-4320-bf37-285fc412e58a" />
 
 Main stack:
 - `yabai` + `skhd` for window management
