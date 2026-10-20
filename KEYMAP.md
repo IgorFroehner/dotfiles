@@ -40,7 +40,7 @@ into "take the current thing there".
 
 | Chord | Action | Was |
 |---|---|---|
-| caps tap | `Esc` | same (simple modification) |
+| caps double-tap | `Esc` | caps tap |
 | caps hold | `Hyper` (lazy) | — |
 | left `Cmd+hjkl` | arrow keys | same |
 | right `Cmd+hjkl` | — (native Cmd) | arrow keys |
@@ -223,8 +223,9 @@ bind those to `backward-word` / `forward-word` if zsh doesn't already.
   `left_command+hjkl` arrow rule. skhd's `cmd`/`ctrl`/`alt` match either side.
   Use `optional: ["any"]` on the caps rule so Shift can be added.
 - **Hyper timing:** the modifiers are active on key down, so there's no hold
-  delay. Esc is sent on release, and only if no other key was pressed. Watch
-  for rollover when typing `Esc` then `:` quickly.
+  delay. Esc needs a double tap: the second press must land within 500ms
+  of the first, and the first must not have been used as Hyper. A single tap
+  (or a held caps released without a chord) sends nothing.
 - **skhd:** `[` `]` `,` `.` have no literal names. Use keycodes `0x21` `0x1E`
   `0x2B` `0x2F`.
 - **skhd:** stack-aware focus: `yabai -m window --focus south || yabai -m window --focus stack.next`

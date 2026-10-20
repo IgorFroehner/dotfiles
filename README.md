@@ -20,7 +20,7 @@ Main stack:
 - `nvim/` - Neovim config and plugin specs
 - `ghostty/config` - terminal emulator config
 - `zellij/` - multiplexer config and layouts
-- `karabiner/` - key remapping (Cmd+hjkl → arrows, Caps Lock → Escape)
+- `karabiner/` - key remapping (Cmd+hjkl → arrows, Caps Lock double-tap → Escape, hold → Hyper)
 - `.zshrc`, `.p10k.zsh` - shell and prompt setup
 
 ## Tools used by the setup/configs
