@@ -20,7 +20,7 @@ local front_app = sbar.add("item", "front_app", {
 })
 
 local function set_hovered(hovered)
-	sbar.animate("elastic", 10, function()
+	sbar.animate("exp", 10, function()
 		front_app:set({
 			background = { color = hovered and colors.spaces.active or colors.transparent },
 			icon = {
