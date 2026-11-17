@@ -18,24 +18,36 @@ function ui.menu_extra(alias)
 	return paths.menus .. " -s '" .. alias .. "'"
 end
 
--- Open the given Swift panel ("menu" or "date"), or close it if it is already open.
--- The panel closes itself on clicks outside of it and of the item that opened it.
--- The [s] in the pattern and the $P indirection keep pkill from matching the
--- shell running this command.
-function ui.toggle_panel(panel)
+-- Starts the given Swift panel ("menu", "date" or "media") unless `if_running`
+-- ("pkill" or "pgrep") finds it already open. The [s] in the pattern and the $P
+-- indirection keep it from matching the shell running this command.
+local function run_panel(panel, if_running)
 	-- The calendar panel reads the weather location from WEATHER_CITY
 	local city = (settings.weather_city or ""):gsub("'", "'\\''")
 	sbar.exec(
 		"P="
 			.. paths.panel
-			.. "; pkill -f '[s]bar_panel app="
+			.. "; "
+			.. if_running
+			.. " -f '[s]bar_panel app="
 			.. panel
-			.. "' || WEATHER_CITY='"
+			.. "' >/dev/null || WEATHER_CITY='"
 			.. city
 			.. "' $P app="
 			.. panel
 			.. " >/dev/null 2>&1 &"
 	)
+end
+
+-- Opens the given Swift panel, or closes it if it is already open.
+-- The panel closes itself on clicks outside of it and of the item that opened it.
+function ui.toggle_panel(panel)
+	run_panel(panel, "pkill")
+end
+
+-- Opens the given Swift panel unless it is already open.
+function ui.open_panel(panel)
+	run_panel(panel, "pgrep")
 end
 
 -- Hover popups: only one is open at a time, so sweeping the mouse across the

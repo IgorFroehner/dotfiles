@@ -6,13 +6,13 @@ A Lua configuration for [SketchyBar](https://felixkratz.github.io/SketchyBar) us
 
 **Left**
 
-- **Apple logo**: opens the system panel (profile, power actions, Spotify controls, battery, volume, memory and CPU gauges)
+- **Apple logo**: opens the system panel (profile, power actions, battery and uptime, CPU / memory / disk bars, apps using the most memory)
 - **Spaces 1–9**: left click focuses the space, right click destroys it, middle click shows a preview
 - **Front app**: icon and name of the focused app; click to show its menus in the bar
 
 **Right of the notch**
 
-- **Spotify**: current track, click to play/pause
+- **Spotify**: current track, click to play/pause, hover for the media panel (artwork and playback controls)
 
 **Right**
 
@@ -34,9 +34,9 @@ events.lua              custom events (menu swap, Spotify notifications)
 items/                  one module per bar item, widgets/ for the right side
 helpers/
   style.lua             font() helper
-  ui.lua                spacer, popup row, menu extra click and panel toggle helpers
+  ui.lua                spacer, popup row, menu extra click and panel open/toggle helpers
   menus/                C helper that lists and clicks app / menu bar extra menus
-  panels/               SwiftUI app for the system and calendar panels
+  panels/               SwiftUI app for the system, calendar and media panels
   ssid/                 tiny app that prints the Wi-Fi network name
 ```
 

@@ -5,21 +5,50 @@ import SwiftUI
 enum PanelType: String {
     case menu
     case date
+    case media
 
-    /// The sketchybar item that toggles this panel.
-    var triggerItem: String { self == .menu ? "apple.logo" : "time" }
+    /// The sketchybar item that opens this panel.
+    var triggerItem: String {
+        switch self {
+        case .menu: return "apple.logo"
+        case .date: return "time"
+        case .media: return "spotify"
+        }
+    }
 
-    /// The menu panel slides in from the left edge, the date panel from the right.
-    var slidesFromLeft: Bool { self == .menu }
+    /// Width in points. Fixed, since the content is laid out in fixed point sizes and a
+    /// share of the screen width squeezes it on smaller displays.
+    var width: CGFloat { self == .media ? 420 : 512 }
+
+    /// The media panel opens on hover and closes once the mouse leaves it and its item;
+    /// the others are toggled by clicking their item.
+    var closesOnMouseExit: Bool { self == .media }
+
+    /// Where the panel slides in from: the menu panel from the left edge, the date
+    /// panel from the right. The media panel isn't animated (nil) and shows instantly.
+    func slideOffset(width: CGFloat) -> CGFloat? {
+        switch self {
+        case .menu: return -width
+        case .date: return width
+        case .media: return nil
+        }
+    }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow?
     var panel: PanelType = .menu
 
+    /// How long the mouse can be away from a hover panel before it closes.
+    private static let hoverGrace: TimeInterval = 0.3
+
     private var barHeight: CGFloat = 25
     /// Horizontal extent of the trigger item; clicks there are left to sketchybar's toggle.
     private var triggerXRange: ClosedRange<CGFloat>?
+    /// Bottom edge of the bar, in AppKit coordinates.
+    private var barBottom: CGFloat = 0
+    private var lastHovered = Date()
+    private var hoverTimer: Timer?
     private var isClosing = false
     private var terminationSource: DispatchSourceSignal?
 
@@ -33,7 +62,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         self.window = window
 
-        let content = panel == .menu ? AnyView(SystemPanelView()) : AnyView(CalendarPanelView())
+        let content: AnyView
+        switch panel {
+        case .menu: content = AnyView(SystemPanelView())
+        case .date: content = AnyView(CalendarPanelView())
+        case .media: content = AnyView(MediaPanelView())
+        }
         let hostingView = NSHostingView(rootView: AnyView(content.frame(width: window.frame.width)))
 
         // Shrink to the content's height, keeping the top edge just below the bar
@@ -46,29 +80,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         window.level = .floating
         window.hasShadow = false
 
-        let offscreenX = panel.slidesFromLeft ? -window.frame.width : window.frame.width
+        let offscreenX = panel.slideOffset(width: window.frame.width)
         if let contentView = window.contentView {
             contentView.wantsLayer = true
             contentView.layer?.cornerRadius = 12
             contentView.layer?.masksToBounds = true
             contentView.layer?.backgroundColor = NSColor.clear.cgColor
-            contentView.layer?.opacity = 0.0
-            contentView.layer?.transform = CATransform3DMakeTranslation(offscreenX, 0, 0)
+            if let offscreenX = offscreenX {
+                contentView.layer?.opacity = 0.0
+                contentView.layer?.transform = CATransform3DMakeTranslation(offscreenX, 0, 0)
+            }
         }
 
         window.makeKeyAndOrderFront(nil)
 
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.2
-            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
-            window.contentView?.layer?.animate(keyPath: "transform.translation.x", from: offscreenX, to: 0, duration: context.duration)
-            window.contentView?.layer?.animate(keyPath: "opacity", from: 0.0, to: 1.0, duration: context.duration)
+        if let offscreenX = offscreenX {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.2
+                context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+                window.contentView?.layer?.animate(keyPath: "transform.translation.x", from: offscreenX, to: 0, duration: context.duration)
+                window.contentView?.layer?.animate(keyPath: "opacity", from: 0.0, to: 1.0, duration: context.duration)
+            }
         }
 
         // Close on clicks anywhere else (global monitors only see clicks in other apps)
         NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
             guard let self = self, !self.isOnTriggerItem(NSEvent.mouseLocation) else { return }
             self.close()
+        }
+
+        if panel.closesOnMouseExit {
+            trackHover()
         }
 
         // sketchybar's toggle sends SIGTERM; animate out instead of dying immediately
@@ -78,8 +120,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         terminationSource?.resume()
     }
 
-    /// Builds the window below the bar on the focused yabai display, or nil if the
-    /// trigger item isn't on that display.
+    /// Builds the window below the bar on the display under the mouse (where the
+    /// trigger item was clicked or hovered), or nil if the item isn't on that display.
     private func makeWindow() -> NSWindow? {
         if let height = runJSONCommand(["sketchybar", "--query", "bar"])?["height"] as? Double {
             barHeight = CGFloat(height)
@@ -87,7 +129,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let gapOutput = String(decoding: runCommand(["yabai", "-m", "config", "window_gap"]), as: UTF8.self)
         let gapSize = CGFloat(Int(gapOutput.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
 
-        guard let display = runJSONCommand(["yabai", "-m", "query", "--displays", "--display"]),
+        guard let display = runJSONCommand(["yabai", "-m", "query", "--displays", "--display", "mouse"]),
               let displayIndex = display["index"] as? Int,
               let frame = display["frame"] as? [String: Double],
               let item = runJSONCommand(["sketchybar", "--query", panel.triggerItem]),
@@ -97,19 +139,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               let size = displayRect["size"] as? [Double]
         else { return nil }
 
+        // yabai and sketchybar report global coordinates with the origin at the primary
+        // display's top-left and y pointing down; AppKit's origin is its bottom-left.
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 0
         let displayX = CGFloat(frame["x"] ?? 0)
         let displayWidth = CGFloat(frame["w"] ?? 0)
         let displayHeight = CGFloat(frame["h"] ?? 0)
-        triggerXRange = (displayX + origin[0])...(displayX + origin[0] + size[0])
+        let displayTop = primaryHeight - CGFloat(frame["y"] ?? 0)
+        let displayBottom = displayTop - displayHeight
+        triggerXRange = origin[0]...(origin[0] + size[0])
+        barBottom = displayTop - barHeight
 
-        // 20% of the screen wide, hanging from just below the bar and gap. This is the
-        // largest the panel can get; it's shrunk to fit its content afterwards.
-        let width = displayWidth * 0.20
-        let top = displayHeight - (barHeight + gapSize)
-        let height = top - gapSize
-        let x = panel.slidesFromLeft
-            ? displayX + gapSize - 1
-            : displayX + displayWidth - width - (gapSize - 1)
+        // Hangs from just below the bar and gap; the height is the most it can get,
+        // shrunk to fit its content afterwards.
+        let width = panel.width
+        let top = displayTop - (barHeight + gapSize)
+        let height = top - displayBottom - gapSize
+        let x: CGFloat
+        switch panel {
+        case .menu:
+            x = displayX + gapSize - 1
+        case .date:
+            x = displayX + displayWidth - width - (gapSize - 1)
+        case .media:
+            // Lined up with the item's left edge, kept on screen
+            x = min(max(origin[0], displayX + gapSize), displayX + displayWidth - width - gapSize)
+        }
 
         return NSWindow(
             contentRect: NSRect(x: x, y: top - height + 2, width: width, height: height),
@@ -126,6 +181,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return screen.frame.maxY - point.y <= barHeight && range.contains(point.x)
     }
 
+    /// Closes the panel once the mouse has been away from it and its item for the grace
+    /// period. The gap between the bar and the panel counts as part of the panel, so
+    /// moving from the item down into it doesn't close it.
+    private func trackHover() {
+        hoverTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            guard let self = self, let frame = self.window?.frame else { return }
+            let mouse = NSEvent.mouseLocation
+            let hoverArea = NSRect(x: frame.minX, y: frame.minY, width: frame.width, height: self.barBottom - frame.minY + 1)
+            if hoverArea.contains(mouse) || self.isOnTriggerItem(mouse) {
+                self.lastHovered = Date()
+            } else if Date().timeIntervalSince(self.lastHovered) > Self.hoverGrace {
+                self.close()
+            }
+        }
+    }
+
     func close() {
         guard !isClosing else { return }
         isClosing = true
@@ -135,7 +206,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func animateWindowClose(completion: @escaping () -> Void) {
-        guard let contentView = window?.contentView, let width = window?.frame.width else {
+        guard let contentView = window?.contentView,
+              let width = window?.frame.width,
+              let offscreenX = panel.slideOffset(width: width)
+        else {
             completion()
             return
         }
@@ -146,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             contentView.layer?.animate(
                 keyPath: "transform.translation.x",
                 from: 0,
-                to: panel.slidesFromLeft ? -width : width,
+                to: offscreenX,
                 duration: context.duration
             )
             contentView.layer?.animate(keyPath: "opacity", from: 1.0, to: 0.0, duration: context.duration)

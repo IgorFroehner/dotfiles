@@ -1,44 +1,6 @@
 import AppKit
 import SwiftUI
 
-// Ring gauge with an icon and a percentage
-struct CircularProgressView: View {
-    let progress: Double
-    let icon: String
-    let color: Color
-    var iconSize: CGFloat = 15 // Default icon size
-    
-    var body: some View {
-        VStack(spacing: 15) {
-            ZStack {
-                Circle()
-                    .stroke(color.opacity(0.15), lineWidth: 6)
-                    .frame(width: 50, height: 50)
-
-                Circle()
-                    .trim(from: 0, to: CGFloat(progress))
-                    .stroke(color, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                    .frame(width: 50, height: 50)
-                    .rotationEffect(.degrees(-90))
-                
-                Image(systemName: icon)
-                    .font(.system(size: 14))
-                    .foregroundColor(color)
-            }
-            .padding(.top, 10)
-            
-            Text("\(Int(progress * 100))%")
-                .font(.system(size: iconSize, weight: .medium))
-                .foregroundColor(color)
-                .padding(.bottom, 5)
-        }
-        .frame(width: 110, height: 110)
-        .background(Color(Colors.cardBackground))
-        .cornerRadius(12)
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(Colors.cardBorder), lineWidth: 1))
-    }
-}
-
 // Rounded card with an optional background image
 struct Card: View {
     let content: AnyView

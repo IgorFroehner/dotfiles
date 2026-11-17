@@ -1,8 +1,12 @@
 local colors = require("colors")
 local settings = require("settings")
 local icons = require("icons")
+local ui = require("helpers.ui")
 
 local MAX_LENGTH = 35
+
+-- Whether Spotify has a track loaded (playing or paused)
+local active = false
 
 -- Prints "stopped", or the player state, track name and artist on separate lines
 local STATUS_SCRIPT = {
@@ -38,7 +42,8 @@ end
 local function update()
 	sbar.exec(STATUS_CMD, function(output)
 		local state, title, artist = output:match("^(%a+)\n?([^\n]*)\n?([^\n]*)")
-		if state ~= "playing" and state ~= "paused" then
+		active = state == "playing" or state == "paused"
+		if not active then
 			spotify:set({
 				label = { drawing = false },
 				icon = { string = icons.spotify.play, color = colors.grey },
@@ -62,4 +67,11 @@ spotify:subscribe({ "spotify_change", "routine", "forced" }, update)
 
 spotify:subscribe("mouse.clicked", function()
 	sbar.exec("osascript -e 'tell application \"Spotify\" to playpause'", update)
+end)
+
+-- The media panel closes itself once the mouse leaves it and the item
+spotify:subscribe("mouse.entered", function()
+	if active then
+		ui.open_panel("media")
+	end
 end)
