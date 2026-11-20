@@ -37,11 +37,16 @@ class StatsController: ObservableObject {
     @Published private(set) var batteryLevel: Double?
     @Published private(set) var isOnACPower = false
     @Published private(set) var topApps: [AppMemory] = []
+    /// nil where the sensors can't be read
+    @Published private(set) var temperatures: Temperatures?
+    /// How hot macOS considers the machine, which is what it throttles on
+    @Published private(set) var thermalState = ProcessInfo.ThermalState.nominal
 
     private let bootTime = StatsController.readBootTime()
     private var timer: Timer?
     private var previousTicks: [Double]?
     private var icons: [String: NSImage] = [:]
+    private let temperatureSensors = TemperatureSensors()
 
     init() {
         // Filled in synchronously, since the panel is sized to its content when it opens.
@@ -64,6 +69,8 @@ class StatsController: ObservableObject {
         updateMemory()
         updateBattery()
         updateTopApps()
+        temperatures = temperatureSensors?.read()
+        thermalState = ProcessInfo.processInfo.thermalState
         if let bootTime = bootTime {
             uptime = Date().timeIntervalSince(bootTime)
         }

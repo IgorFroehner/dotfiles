@@ -6,7 +6,7 @@ A Lua configuration for [SketchyBar](https://felixkratz.github.io/SketchyBar) us
 
 **Left**
 
-- **Apple logo**: opens the system panel (profile, power actions, battery and uptime, CPU / memory / disk bars, apps using the most memory)
+- **Apple logo**: opens the system panel (profile, power actions, battery and uptime, CPU / memory / disk / temperature bars, apps using the most memory)
 - **Spaces 1–9**: left click focuses the space, right click destroys it, middle click shows a preview
 - **Front app**: icon and name of the focused app; click to show its menus in the bar
 

@@ -122,6 +122,15 @@ struct SystemPanelView: View {
                         value: diskUsed,
                         color: Color(Colors.blue)
                     )
+                    if let temperatures = stats.temperatures {
+                        UsageRow(
+                            title: "Temperature",
+                            detail: temperatureDetail(temperatures),
+                            value: temperatures.chip / 100,
+                            color: thermalColor(stats.thermalState),
+                            valueLabel: formatTemperature(temperatures.chip)
+                        )
+                    }
                 }
             ),
             backgroundColor: Color(Colors.cardBackground),
@@ -176,6 +185,30 @@ struct SystemPanelView: View {
         }
     }
 
+    private func temperatureDetail(_ temperatures: Temperatures) -> String {
+        [
+            temperatures.ssd.map { "SSD \(formatTemperature($0))" },
+            temperatures.battery.map { "battery \(formatTemperature($0))" },
+        ]
+        .compactMap { $0 }
+        .joined(separator: " · ")
+    }
+
+    /// Colored by macOS's own thermal pressure rather than fixed thresholds, since how hot
+    /// is too hot differs between chips
+    private func thermalColor(_ state: ProcessInfo.ThermalState) -> Color {
+        switch state {
+        case .nominal: return Color(Colors.green)
+        case .fair: return Color(Colors.yellow)
+        case .serious: return Color(Colors.orange)
+        default: return Color(Colors.red)
+        }
+    }
+
+    private func formatTemperature(_ celsius: Double) -> String {
+        "\(Int(celsius.rounded()))°C"
+    }
+
     private func formatMemory(_ bytes: UInt64) -> String {
         ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .memory)
     }
@@ -185,12 +218,15 @@ struct SystemPanelView: View {
     }
 }
 
-/// A labelled usage bar: title, detail and percentage above, the bar below.
+/// A labelled usage bar: title, detail and value above, the bar below.
 private struct UsageRow: View {
     let title: String
     let detail: String
+    /// How full the bar is, from 0 to 1
     let value: Double
     let color: Color
+    /// Shown instead of the value as a percentage
+    var valueLabel: String? = nil
 
     var body: some View {
         let fraction = min(max(value, 0), 1)
@@ -205,10 +241,10 @@ private struct UsageRow: View {
                     .font(.system(size: 11))
                     .foregroundColor(.white.opacity(0.5))
                     .lineLimit(1)
-                Text("\(Int((fraction * 100).rounded()))%")
+                Text(valueLabel ?? "\(Int((fraction * 100).rounded()))%")
                     .font(.system(size: 12, weight: .semibold).monospacedDigit())
                     .foregroundColor(color)
-                    .frame(width: 36, alignment: .trailing)
+                    .frame(width: 42, alignment: .trailing)
             }
 
             GeometryReader { geometry in
