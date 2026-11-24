@@ -41,6 +41,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// How long the mouse can be away from a hover panel before it closes.
     private static let hoverGrace: TimeInterval = 0.3
+    /// Slide-in and slide-out durations for the menu and date panels.
+    private static let openDuration: TimeInterval = 0.08
+    private static let closeDuration: TimeInterval = 0.08
 
     private var barHeight: CGFloat = 25
     /// Horizontal extent of the trigger item; clicks there are left to sketchybar's toggle.
@@ -96,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if let offscreenX = offscreenX {
             NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.2
+                context.duration = Self.openDuration
                 context.timingFunction = CAMediaTimingFunction(name: .easeOut)
                 window.contentView?.layer?.animate(keyPath: "transform.translation.x", from: offscreenX, to: 0, duration: context.duration)
                 window.contentView?.layer?.animate(keyPath: "opacity", from: 0.0, to: 1.0, duration: context.duration)
@@ -215,7 +218,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.3
+            context.duration = Self.closeDuration
             context.timingFunction = CAMediaTimingFunction(name: .easeIn)
             contentView.layer?.animate(
                 keyPath: "transform.translation.x",
