@@ -22,6 +22,13 @@ defaults write com.apple.dock mru-spaces -bool false
 # Don't reveal the desktop when clicking the wallpaper (only in Stage Manager)
 defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 
+# Disable Mission Control "Move left/right a space" (Ctrl+arrows): skhd routes them
+# through yabai instead, which switches instantly without the slide animation
+for id in 79 80 81 82; do
+	defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" "{ enabled = 0; }"
+done
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+
 killall Dock
 
 echo "  Done. Some changes may require a logout to take effect."

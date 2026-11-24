@@ -54,6 +54,7 @@ into "take the current thing there".
 | `Hyper+1`–`9` | focus space N | `Alt+1`–`9` |
 | `Hyper+Shift+1`–`9` | send window to space N | `Shift+Alt+1`–`9` |
 | `Hyper+[` / `]` | focus prev / next space | — |
+| `Ctrl+←` / `→` (`Ctrl+Cmd+h` / `l`) | focus prev / next space on current display, no animation | macOS Mission Control (animated) |
 | `Hyper+Shift+[` / `]` | send window to prev / next space | `Shift+Alt+p` / `n` |
 | `Hyper+,` / `.` | focus display west / east | `Alt+a` / `g` |
 | `Hyper+Shift+,` / `.` | send window to display west / east and follow | `Shift+Alt+a` / `g` |
