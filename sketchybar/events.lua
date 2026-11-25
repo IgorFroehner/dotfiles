@@ -3,5 +3,8 @@
 -- Triggered by the front app item to show the app menus in place of the spaces
 sbar.add("event", "swap_menus_and_spaces")
 
+-- AeroSpace triggers this on every workspace switch (exec-on-workspace-change)
+sbar.add("event", "aerospace_workspace_change")
+
 -- Spotify posts this distributed notification whenever playback changes
 sbar.add("event", "spotify_change", "com.spotify.client.PlaybackStateChanged")

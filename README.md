@@ -5,7 +5,7 @@ Personal macOS dotfiles for a tiling + terminal-focused workflow.
 <img width="3600" height="2338" alt="Screenshot 2026-10-17 at 18 17 39" src="https://github.com/user-attachments/assets/e9a976d0-d0a7-4320-bf37-285fc412e58a" />
 
 Main stack:
-- `yabai` + `skhd` for window management
+- `aerospace` for window management and its hotkeys
 - `sketchybar` (Lua + SbarLua) for the top bar
 - `neovim` (Lazy.nvim-based config)
 - `ghostty` + `zsh` (`oh-my-zsh` + `powerlevel10k`)
@@ -14,8 +14,7 @@ Main stack:
 
 ## What is in this repo
 
-- `yabai/yabairc` - window manager rules, paddings, signals
-- `skhd/skhdrc` - global hotkeys for layouts, focus, swaps, spaces
+- `aerospace/aerospace.toml` - tiling, workspaces, gaps, floating rules and global hotkeys
 - `sketchybar/` - Lua config, widgets, and helper binaries
 - `nvim/` - Neovim config and plugin specs
 - `ghostty/config` - terminal emulator config
@@ -29,7 +28,7 @@ Installed by `installs` and/or referenced by configs:
 - Core: `homebrew`, `git`, `curl`, `coreutils`, `gawk`, `gpg`
 - Shell: `oh-my-zsh`, `powerlevel10k`, zsh plugins
 - Editors/CLI: `neovim`, `ripgrep`, `jq`, `bat`, `fzf`, `zoxide`, `fd`
-- Windowing/UI: `yabai`, `skhd`, `sketchybar`, `SbarLua`, `lua`
+- Windowing/UI: `aerospace`, `sketchybar`, `SbarLua`, `lua`
 - SketchyBar helpers: `switchaudio-osx`, `nowplaying-cli`, SF fonts
 - Runtime managers: `mise` (for `nodejs`, `yarn`, `ruby`, etc.)
 - Terminal tools: `ghostty`, `zellij`
@@ -85,6 +84,8 @@ This links:
 - `ghostty` -> `~/.config/ghostty`
 - `zellij` -> `~/.config/zellij`
 - `karabiner` -> `~/.config/karabiner`
+- `sketchybar` -> `~/.config/sketchybar`
+- `aerospace` -> `~/.config/aerospace`
 - `.zshrc` and `.p10k.zsh` -> `~/`
 - copies `.zsh_secrets.example` -> `~/.zsh_secrets`
 
@@ -97,20 +98,20 @@ Edit `~/.zsh_secrets` and fill values you need (example vars):
 
 ## macOS-specific notes
 
-### yabai scripting addition
+### AeroSpace
 
-`yabai/yabairc` calls:
-- `sudo yabai --load-sa`
-
-For this to work cleanly, configure `sudoers` to allow that command without a password.
-
-### Start services
+AeroSpace needs no SIP changes or sudoers entry. Start it once, grant it
+Accessibility access when asked, and it starts at login after that
+(`start-at-login` in `aerospace.toml`):
 
 ```bash
-brew services start yabai
-brew services start skhd
+open -a AeroSpace
 brew services start sketchybar
 ```
+
+It uses its own virtual workspaces rather than macOS Spaces, so keep exactly
+one Space per display: remove any extra ones in Mission Control. A window left
+on another Space makes macOS slide over to it whenever AeroSpace focuses it.
 
 ### Optional macOS defaults
 

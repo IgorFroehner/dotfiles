@@ -1,0 +1,165 @@
+# AeroSpace: tiling, workspaces and hotkeys in one app (replaces yabai + skhd).
+# Hyper = caps lock held (Karabiner sends right ctrl+opt+cmd). See KEYMAP.md.
+# Commands: https://nikitabobko.github.io/AeroSpace/commands
+
+config-version = 2
+
+start-at-login = true
+auto-reload-config = true
+
+# Workspaces 1-9 always exist, so the sketchybar items always have a target
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+# Odd workspaces on the main display, even ones on the other, so both are in
+# reach of the left hand. Without this every workspace sticks to the first
+# display and AeroSpace makes up a "10" for the second.
+workspace-to-monitor-force-assignment.1 = 'main'
+workspace-to-monitor-force-assignment.2 = 'secondary'
+workspace-to-monitor-force-assignment.3 = 'main'
+workspace-to-monitor-force-assignment.4 = 'secondary'
+workspace-to-monitor-force-assignment.5 = 'main'
+workspace-to-monitor-force-assignment.6 = 'secondary'
+workspace-to-monitor-force-assignment.7 = 'main'
+workspace-to-monitor-force-assignment.8 = 'secondary'
+workspace-to-monitor-force-assignment.9 = 'main'
+
+# Started at login, AeroSpace gets launchd's minimal PATH; add Homebrew's so
+# commands it runs (sketchybar, aerospace, scripts) are found
+exec.inherit-env-vars = true
+exec.env-vars.PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
+
+# Redraw the sketchybar workspace items (items/spaces.lua) on start and on every switch
+after-startup-command = ['exec-and-forget sketchybar --trigger aerospace_workspace_change']
+exec-on-workspace-change = ['/bin/bash', '-c', 'sketchybar --trigger aerospace_workspace_change']
+
+# Default to a vertical accordion: every window takes the full area and
+# j/k cycle through them, like yabai's stack layout. Padding 0 hides the
+# slivers of the neighbouring windows that accordion shows by default.
+default-root-container-layout = 'accordion'
+default-root-container-orientation = 'vertical'
+accordion-padding = 0
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+key-mapping.preset = 'qwerty'
+
+# PAD = 9 everywhere. The top gap also clears sketchybar: 38 (bar_height in
+# sketchybar/settings.lua) + 9 on external displays. On the built-in display
+# macOS already keeps the 38pt notch row out of the usable area, so only 9.
+# window_gap in sketchybar/settings.lua must match the inner gap.
+gaps.inner.horizontal = 9
+gaps.inner.vertical = 9
+gaps.outer.left = 9
+gaps.outer.right = 9
+gaps.outer.bottom = 9
+gaps.outer.top = [{ monitor.'built-in' = 9 }, 47]
+
+[mode.main.binding]
+
+# Layouts (bsp -> tiles side by side, stack -> vertical accordion).
+# Pressing again flips the orientation.
+ctrl-alt-cmd-b = 'layout h_tiles v_tiles'
+ctrl-alt-cmd-s = 'layout v_accordion h_accordion'
+# Rotate: closest equivalent is flipping the orientation
+ctrl-alt-cmd-r = 'layout horizontal vertical'
+
+# Focus windows (in the vertical accordion, j/k walk the stack)
+ctrl-alt-cmd-h = 'focus left'
+ctrl-alt-cmd-j = 'focus down'
+ctrl-alt-cmd-k = 'focus up'
+ctrl-alt-cmd-l = 'focus right'
+
+# Swap windows (focus stays on the moved window)
+ctrl-alt-cmd-shift-h = 'swap left'
+ctrl-alt-cmd-shift-j = 'swap down'
+ctrl-alt-cmd-shift-k = 'swap up'
+ctrl-alt-cmd-shift-l = 'swap right'
+
+# Next / previous window in the focused workspace, any app, wrapping around
+ctrl-alt-cmd-tab = 'focus --wrap-around dfs-next'
+ctrl-alt-cmd-shift-tab = 'focus --wrap-around dfs-prev'
+
+# Displays
+ctrl-alt-cmd-comma = 'focus-monitor left'
+ctrl-alt-cmd-period = 'focus-monitor right'
+ctrl-alt-cmd-shift-comma = 'move-node-to-monitor --focus-follows-window left'
+ctrl-alt-cmd-shift-period = 'move-node-to-monitor --focus-follows-window right'
+
+# Window state
+ctrl-alt-cmd-f = 'fullscreen'
+ctrl-alt-cmd-space = 'layout floating tiling'
+ctrl-alt-cmd-e = 'balance-sizes'
+
+# Workspaces: prev / next stay on the focused display and don't wrap.
+# Ctrl+arrows replace macOS's animated Mission Control shortcut (disabled in
+# macconfigs). Karabiner also sends them for Ctrl+left-Cmd+h/l.
+ctrl-alt-cmd-leftSquareBracket = 'workspace prev'
+ctrl-alt-cmd-rightSquareBracket = 'workspace next'
+ctrl-left = 'workspace prev'
+ctrl-right = 'workspace next'
+ctrl-alt-cmd-shift-leftSquareBracket = 'move-node-to-workspace prev'
+ctrl-alt-cmd-shift-rightSquareBracket = 'move-node-to-workspace next'
+
+ctrl-alt-cmd-1 = 'workspace 1'
+ctrl-alt-cmd-2 = 'workspace 2'
+ctrl-alt-cmd-3 = 'workspace 3'
+ctrl-alt-cmd-4 = 'workspace 4'
+ctrl-alt-cmd-5 = 'workspace 5'
+ctrl-alt-cmd-6 = 'workspace 6'
+ctrl-alt-cmd-7 = 'workspace 7'
+ctrl-alt-cmd-8 = 'workspace 8'
+ctrl-alt-cmd-9 = 'workspace 9'
+
+ctrl-alt-cmd-shift-1 = 'move-node-to-workspace 1'
+ctrl-alt-cmd-shift-2 = 'move-node-to-workspace 2'
+ctrl-alt-cmd-shift-3 = 'move-node-to-workspace 3'
+ctrl-alt-cmd-shift-4 = 'move-node-to-workspace 4'
+ctrl-alt-cmd-shift-5 = 'move-node-to-workspace 5'
+ctrl-alt-cmd-shift-6 = 'move-node-to-workspace 6'
+ctrl-alt-cmd-shift-7 = 'move-node-to-workspace 7'
+ctrl-alt-cmd-shift-8 = 'move-node-to-workspace 8'
+ctrl-alt-cmd-shift-9 = 'move-node-to-workspace 9'
+
+# Pause / resume window management (was stop / start the yabai service)
+ctrl-alt-q = 'enable off'
+ctrl-alt-s = 'enable on'
+
+# Floating windows (yabai manage=off). The first matching rule wins.
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-name-regex-substring = '^Karabiner-(Elements|EventViewer)$'
+run = 'layout floating'
+
+# System utilities
+[[on-window-detected]]
+if.app-name-regex-substring = '^(Archive Utility|Activity Monitor|System Information|Installer)$'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+if.window-title-regex-substring = '^(Copy|Move|Connect to Server|.* Info)$'
+run = 'layout floating'
+
+# Menu bar / tool apps
+[[on-window-detected]]
+if.app-name-regex-substring = '^(1Password|Raycast|Logi Options\+|logioptionsplus|Mos|Pritunl)$'
+run = 'layout floating'
+
+# Zoom: tile only the main windows, float toolbars and popups
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+if.window-title-regex-substring = '^(Zoom Meeting|Zoom Workplace)$'
+run = 'layout tiling'
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = 'layout floating'

@@ -1,13 +1,13 @@
 # SketchyBar
 
-A Lua configuration for [SketchyBar](https://felixkratz.github.io/SketchyBar) using [SbarLua](https://github.com/FelixKratz/SbarLua), styled with the Nord palette and built around [yabai](https://github.com/koekeishiya/yabai).
+A Lua configuration for [SketchyBar](https://felixkratz.github.io/SketchyBar) using [SbarLua](https://github.com/FelixKratz/SbarLua), styled with the Nord palette and built around [AeroSpace](https://github.com/nikitabobko/AeroSpace).
 
 ## What's on the bar
 
 **Left**
 
 - **Apple logo**: opens the system panel (profile, power actions, battery and uptime, CPU / memory / disk / temperature bars, apps using the most memory)
-- **Spaces 1–9**: left click focuses the space, right click destroys it, middle click shows a preview
+- **Workspaces 1–9**: AeroSpace's workspaces, shown on the display each one is on; click to focus
 - **Front app**: icon and name of the focused app; click to show its menus in the bar
 
 **Right of the notch**
@@ -30,7 +30,7 @@ init.lua                loads bar, defaults, events and items in one config batc
 bar.lua / default.lua   the --bar and --default domains
 settings.lua            sizes, paddings and fonts
 colors.lua / icons.lua  palette and SF Symbols
-events.lua              custom events (menu swap, Spotify notifications)
+events.lua              custom events (menu swap, AeroSpace workspaces, Spotify)
 items/                  one module per bar item, widgets/ for the right side
 helpers/
   style.lua             font() helper
@@ -44,7 +44,7 @@ The helper binaries are built by `make` on every load (a no-op when they're up t
 
 ## Setup
 
-Dependencies: `sketchybar`, `lua`, `yabai`, `jq` and `switchaudio-osx` from Homebrew, plus SbarLua, which `helpers/install.sh` builds into `~/.local/share/sketchybar_lua`.
+Dependencies: `sketchybar`, `lua`, `aerospace`, `jq` and `switchaudio-osx` from Homebrew, plus SbarLua, which `helpers/install.sh` builds into `~/.local/share/sketchybar_lua`.
 
 macOS only reveals the Wi-Fi network name to apps with Location Services access, so the first time the Wi-Fi popup opens, allow **SSID** when asked (System Settings › Privacy & Security › Location Services).
 

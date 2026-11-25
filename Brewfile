@@ -1,5 +1,5 @@
 # Taps
-tap "koekeishiya/formulae"
+tap "nikitabobko/tap"
 tap "FelixKratz/formulae"
 
 # Core
@@ -12,9 +12,7 @@ brew "gawk"
 # Programming languages management
 brew "mise"
 
-# Window manager and key bindings
-brew "koekeishiya/formulae/yabai"
-brew "koekeishiya/formulae/skhd"
+# Window manager and key bindings: see the casks below
 
 # SketchyBar and helpers
 brew "sketchybar"
@@ -37,6 +35,7 @@ brew "fd"
 brew "zellij"
 
 # Casks
+cask "nikitabobko/tap/aerospace"
 cask "ghostty"
 cask "karabiner-elements"
 cask "sf-symbols"

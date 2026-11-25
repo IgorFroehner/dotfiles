@@ -22,7 +22,8 @@ end
 -- ("pkill" or "pgrep") finds it already open. The [s] in the pattern and the $P
 -- indirection keep it from matching the shell running this command.
 local function run_panel(panel, if_running)
-	-- The calendar panel reads the weather location from WEATHER_CITY
+	-- The calendar panel reads the weather location from WEATHER_CITY; every panel
+	-- leaves WINDOW_GAP between itself, the bar and the screen edge
 	local city = (settings.weather_city or ""):gsub("'", "'\\''")
 	sbar.exec(
 		"P="
@@ -33,7 +34,9 @@ local function run_panel(panel, if_running)
 			.. panel
 			.. "' >/dev/null || WEATHER_CITY='"
 			.. city
-			.. "' $P app="
+			.. "' WINDOW_GAP="
+			.. settings.window_gap
+			.. " $P app="
 			.. panel
 			.. " >/dev/null 2>&1 &"
 	)

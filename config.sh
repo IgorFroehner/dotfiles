@@ -35,12 +35,11 @@ link "$DOTFILES_DIR/ghostty"    "$HOME/.config/ghostty"
 link "$DOTFILES_DIR/zellij"     "$HOME/.config/zellij"
 link "$DOTFILES_DIR/karabiner"  "$HOME/.config/karabiner"
 link "$DOTFILES_DIR/sketchybar" "$HOME/.config/sketchybar"
+link "$DOTFILES_DIR/aerospace"  "$HOME/.config/aerospace"
 link "$DOTFILES_DIR/git"       "$HOME/.config/git"
 link "$DOTFILES_DIR/mise"      "$HOME/.config/mise"
 
 # ~/ targets
-link "$DOTFILES_DIR/yabai/yabairc" "$HOME/.yabairc"
-link "$DOTFILES_DIR/skhd/skhdrc"   "$HOME/.skhdrc"
 link "$DOTFILES_DIR/.zshrc"        "$HOME/.zshrc"
 link "$DOTFILES_DIR/.p10k.zsh"     "$HOME/.p10k.zsh"
 

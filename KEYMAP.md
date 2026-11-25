@@ -1,6 +1,6 @@
 # Keymap
 
-Source of truth for keybindings across Karabiner, yabai/skhd, Ghostty, zellij,
+Source of truth for keybindings across Karabiner, AeroSpace, Ghostty, zellij,
 nvim and zsh. Change a binding here first, then in the tool's config.
 
 ## Layers
@@ -10,14 +10,14 @@ modifier.
 
 | Modifier | Layer | Tool |
 |---|---|---|
-| `Hyper` (caps lock held) | macOS windows, spaces, displays | yabai via skhd |
+| `Hyper` (caps lock held) | macOS windows, workspaces, displays | AeroSpace |
 | `Alt` (left Option) | terminal panes and tabs | zellij |
 | `Ctrl+hjkl` | nvim splits, continuing into zellij panes at the edge | nvim + zellij |
 | `Space` (leader) | editor actions | nvim |
 | `Cmd` | macOS app conventions | everything; Ghostty translates a few |
 
 **Notation:** `Hyper` = right Ctrl + right Option + right Cmd, sent while caps
-lock is held. This is *not* skhd's `hyper` keyword, which also includes Shift.
+lock is held. In `aerospace.toml` it's written `ctrl-alt-cmd`.
 `Hyper+Shift+h` means caps + Shift + h.
 
 ## Vocabulary
@@ -45,29 +45,37 @@ into "take the current thing there".
 | left `Cmd+hjkl` | arrow keys | same |
 | right `Cmd+hjkl` | — (native Cmd) | arrow keys |
 
-## yabai (skhd)
+## AeroSpace
 
-| Chord | Action | Was |
+Workspaces are AeroSpace's own, not macOS Spaces, so switching is instant.
+The default layout is a vertical accordion: every window fills the workspace
+and `j`/`k` walk through them, like yabai's stack layout. Odd workspaces
+live on the main display and even ones on the other, so `Hyper+2` also moves
+focus to the second display.
+
+| Chord | Action | Was (yabai) |
 |---|---|---|
-| `Hyper+hjkl` | focus window (`j`/`k` fall back to stack next/prev) | `Alt+hjkl` |
-| `Hyper+Shift+hjkl` | swap window | `Shift+Alt+hjkl` |
-| `Hyper+1`–`9` | focus space N | `Alt+1`–`9` |
-| `Hyper+Shift+1`–`9` | send window to space N | `Shift+Alt+1`–`9` |
-| `Hyper+[` / `]` | focus prev / next space | — |
-| `Ctrl+←` / `→` (`Ctrl+Cmd+h` / `l`) | focus prev / next space on current display, no animation | macOS Mission Control (animated) |
-| `Hyper+Shift+[` / `]` | send window to prev / next space | `Shift+Alt+p` / `n` |
-| `Hyper+,` / `.` | focus display west / east | `Alt+a` / `g` |
-| `Hyper+Shift+,` / `.` | send window to display west / east and follow | `Shift+Alt+a` / `g` |
-| `Hyper+f` | toggle zoom-fullscreen | `Shift+Alt+m` |
-| `Hyper+space` | toggle float (centered 4:4:1:1:2:2 grid) | `Shift+Alt+t` |
-| `Hyper+e` | balance space | `Shift+Alt+e` |
-| `Hyper+r` | rotate space 270° | `Shift+Alt+r` |
-| `Hyper+y` / `x` | mirror y-axis / x-axis | `Shift+Alt+y` / `x` |
-| `Hyper+b` | layout bsp | `Alt+b` |
-| `Hyper+s` | layout stack | `Alt+s` |
-| `Hyper+Shift+space` | layout float | `Alt+f` |
-| `Ctrl+Alt+q` / `s` | stop / start yabai service | same |
-| `Alt` + mouse drag | move (button 1) / resize (button 2) | same |
+| `Hyper+hjkl` | focus window | same (`j`/`k` needed a stack fallback) |
+| `Hyper+Shift+hjkl` | swap window | same |
+| `Hyper+Tab` / `Hyper+Shift+Tab` | next / prev window in the workspace, wrapping around | App Exposé (`Ctrl+↓`) |
+| `Hyper+1`–`9` | focus workspace N | focus space N |
+| `Hyper+Shift+1`–`9` | send window to workspace N | send window to space N |
+| `Hyper+[` / `]` | focus prev / next workspace on the focused display | prev / next space on any display |
+| `Ctrl+←` / `→` (`Ctrl+Cmd+h` / `l`) | same as `Hyper+[` / `]` | same, through a display check in skhd |
+| `Hyper+Shift+[` / `]` | send window to prev / next workspace on the focused display | prev / next space on any display |
+| `Hyper+,` / `.` | focus display left / right | same |
+| `Hyper+Shift+,` / `.` | send window to display left / right and follow | same |
+| `Hyper+f` | toggle fullscreen inside the workspace | toggle zoom-fullscreen |
+| `Hyper+space` | toggle floating | toggle float, centered on a 4:4:1:1:2:2 grid |
+| `Hyper+e` | balance sizes | balance space |
+| `Hyper+r` | flip orientation | rotate space 270° |
+| `Hyper+b` | tiles side by side; again flips to rows | bsp layout |
+| `Hyper+s` | vertical accordion; again flips to horizontal | stack layout |
+| `Ctrl+Alt+q` / `s` | pause / resume AeroSpace | stop / start yabai service |
+
+Dropped, with no AeroSpace equivalent: `Hyper+y` / `x` (mirror),
+`Hyper+Shift+space` (float the whole space) and `Alt` + mouse drag
+(move / resize).
 
 ## Ghostty
 
@@ -221,19 +229,19 @@ bind those to `backward-word` / `forward-word` if zsh doesn't already.
   modifications run before complex ones and would turn caps into Esc before
   the Hyper rule sees it.
 - **Karabiner:** send Hyper as *right*-side modifiers so it can't trigger the
-  `left_command+hjkl` arrow rule. skhd's `cmd`/`ctrl`/`alt` match either side.
+  `left_command+hjkl` arrow rule. AeroSpace's `cmd`/`ctrl`/`alt` match either side.
   Use `optional: ["any"]` on the caps rule so Shift can be added.
 - **Hyper timing:** the modifiers are active on key down, so there's no hold
   delay. Esc needs a double tap: the second press must land within 500ms
   of the first, and the first must not have been used as Hyper. A single tap
   (or a held caps released without a chord) sends nothing.
-- **skhd:** `[` `]` `,` `.` have no literal names. Use keycodes `0x21` `0x1E`
-  `0x2B` `0x2F`.
-- **skhd:** stack-aware focus: `yabai -m window --focus south || yabai -m window --focus stack.next`
-  (default layout is stack, where directional focus alone does nothing).
+- **AeroSpace:** `[` `]` `,` `.` are `leftSquareBracket` `rightSquareBracket`
+  `comma` `period` in binding names.
+- **AeroSpace:** `Ctrl+←` / `→` only reach it while macOS's own "Move left / right
+  a space" shortcuts are off (`macconfigs` disables them).
 - **macOS:** Accessibility shortcuts use `Ctrl+Opt+Cmd+8` (invert colors) and
   `Ctrl+Opt+Cmd+,` / `.` (contrast). Disable them in System Settings →
-  Keyboard → Keyboard Shortcuts → Accessibility if they fire instead of yabai.
+  Keyboard → Keyboard Shortcuts → Accessibility if they fire instead of AeroSpace.
 - **Ghostty → zellij:** `Alt+[` must be sent as kitty CSI-u (`\x1b[91;3u`), not
   `ESC [`, which is ambiguous with every escape sequence.
 - **Seamless navigation:** zellij `hiasr/vim-zellij-navigator` (bound to

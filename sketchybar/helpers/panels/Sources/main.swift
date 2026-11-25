@@ -129,27 +129,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let height = runJSONCommand(["sketchybar", "--query", "bar"])?["height"] as? Double {
             barHeight = CGFloat(height)
         }
-        let gapOutput = String(decoding: runCommand(["yabai", "-m", "config", "window_gap"]), as: UTF8.self)
-        let gapSize = CGFloat(Int(gapOutput.trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0)
+        // window_gap from settings.lua, passed in by ui.lua
+        let gapSize = CGFloat(Double(ProcessInfo.processInfo.environment["WINDOW_GAP"] ?? "") ?? 0)
 
-        guard let display = runJSONCommand(["yabai", "-m", "query", "--displays", "--display", "mouse"]),
-              let displayIndex = display["index"] as? Int,
-              let frame = display["frame"] as? [String: Double],
+        // sketchybar reports global coordinates with the origin at the primary display's
+        // top-left and y pointing down; AppKit's origin is its bottom-left.
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 0
+        let mouse = NSEvent.mouseLocation
+
+        // The item's rect on the display under the mouse, found by its center point
+        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) }),
               let item = runJSONCommand(["sketchybar", "--query", panel.triggerItem]),
               let boundingRects = item["bounding_rects"] as? [String: Any],
-              let displayRect = boundingRects["display-\(displayIndex)"] as? [String: Any],
-              let origin = displayRect["origin"] as? [Double],
-              let size = displayRect["size"] as? [Double]
+              let itemRect = boundingRects.values.lazy
+                  .compactMap({ rect -> ([Double], [Double])? in
+                      guard let rect = rect as? [String: Any],
+                            let origin = rect["origin"] as? [Double], origin.count == 2,
+                            let size = rect["size"] as? [Double], size.count == 2
+                      else { return nil }
+                      return (origin, size)
+                  })
+                  .first(where: { origin, size in
+                      let center = NSPoint(x: origin[0] + size[0] / 2, y: primaryHeight - (origin[1] + size[1] / 2))
+                      return NSMouseInRect(center, screen.frame, false)
+                  })
         else { return nil }
 
-        // yabai and sketchybar report global coordinates with the origin at the primary
-        // display's top-left and y pointing down; AppKit's origin is its bottom-left.
-        let primaryHeight = NSScreen.screens.first?.frame.height ?? 0
-        let displayX = CGFloat(frame["x"] ?? 0)
-        let displayWidth = CGFloat(frame["w"] ?? 0)
-        let displayHeight = CGFloat(frame["h"] ?? 0)
-        let displayTop = primaryHeight - CGFloat(frame["y"] ?? 0)
-        let displayBottom = displayTop - displayHeight
+        let (origin, size) = itemRect
+        let displayX = screen.frame.minX
+        let displayWidth = screen.frame.width
+        let displayTop = screen.frame.maxY
+        let displayBottom = screen.frame.minY
         triggerXRange = origin[0]...(origin[0] + size[0])
         barBottom = displayTop - barHeight
 

@@ -45,9 +45,9 @@ local function show_menus()
 	hide_menus()
 	local current = generation
 
-	-- Pin the menus to the focused window's space
-	sbar.exec("yabai -m query --windows --window | jq -r '.space'", function(space)
-		space = tonumber(space)
+	-- Pin the menus to the focused display
+	sbar.exec("aerospace list-monitors --focused --format '%{monitor-appkit-nsscreen-screens-id}'", function(display)
+		display = tonumber(display)
 		sbar.exec(paths.menus .. " -l", function(menus)
 			if current ~= generation then
 				return
@@ -61,7 +61,7 @@ local function show_menus()
 					break
 				end
 				local item = menu_items[i]
-				item:set({ space = space, label = i > 1 and menu or "" })
+				item:set({ display = display, label = i > 1 and menu or "" })
 				sbar.delay((i - 1) * STAGGER, function()
 					if current == generation then
 						item:set({ drawing = true })

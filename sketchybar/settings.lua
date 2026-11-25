@@ -7,6 +7,9 @@ return {
 	bar_margin_padding = 18,
 	notch_width = 221,
 
+	-- Gap between windows in aerospace/aerospace.toml; the panels keep the same distance
+	window_gap = 9,
+
 	item_height = 20,
 	item_padding = 8,
 	item_corner_radius = 4,

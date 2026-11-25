@@ -22,12 +22,16 @@ defaults write com.apple.dock mru-spaces -bool false
 # Don't reveal the desktop when clicking the wallpaper (only in Stage Manager)
 defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 
-# Disable Mission Control "Move left/right a space" (Ctrl+arrows): skhd routes them
-# through yabai instead, which switches instantly without the slide animation
+# Disable Mission Control "Move left/right a space" (Ctrl+arrows): AeroSpace binds
+# them to its own workspaces instead, which switch instantly without the slide animation
 for id in 79 80 81 82; do
 	defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" "{ enabled = 0; }"
 done
 /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+
+# Group windows by app in Mission Control: AeroSpace parks windows of hidden
+# workspaces in a screen corner, which makes them tiny there otherwise
+defaults write com.apple.dock expose-group-apps -bool true
 
 killall Dock
 

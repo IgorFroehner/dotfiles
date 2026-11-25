@@ -32,8 +32,7 @@ bash "$DOTFILES_DIR/macconfigs"
 # Start services
 echo ""
 echo "==> Starting services"
-brew services start yabai 2>/dev/null || echo "  yabai already running"
-brew services start skhd 2>/dev/null || echo "  skhd already running"
+open -a AeroSpace # starts at login after this (start-at-login in aerospace.toml)
 brew services start sketchybar 2>/dev/null || echo "  sketchybar already running"
 
 echo ""
@@ -43,6 +42,6 @@ echo "============================================"
 echo ""
 echo "Next steps:"
 echo "  1. Edit ~/.zsh_secrets with your API keys"
-echo "  2. Configure sudoers for yabai: sudo yabai --load-sa"
+echo "  2. Grant AeroSpace Accessibility access (System Settings > Privacy & Security)"
 echo "  3. Restart your terminal"
 echo ""

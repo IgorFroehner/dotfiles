@@ -3,9 +3,15 @@ local settings = require("settings")
 local style = require("helpers.style")
 local ui = require("helpers.ui")
 
-local function add_space(i)
-	local space = sbar.add("space", "space." .. i, {
-		space = i,
+-- AeroSpace workspaces 1-9 (persistent-workspaces in aerospace/aerospace.toml).
+-- They're virtual, so these are plain items: each one is moved to the display
+-- its workspace is on and highlighted while that workspace is visible there.
+local WORKSPACES = 9
+
+local spaces = {}
+
+for i = 1, WORKSPACES do
+	local space = sbar.add("item", "space." .. i, {
 		width = 30,
 		label = {
 			string = string.format("%02d", i),
@@ -18,48 +24,42 @@ local function add_space(i)
 		background = {
 			color = colors.transparent,
 		},
+		click_script = "aerospace workspace " .. i,
 	})
 
 	-- 2px gap after each space (fixed-width items ignore padding)
-	sbar.add("space", "space.gap." .. i, { space = i, width = 2 })
+	local gap = sbar.add("item", "space.gap." .. i, { width = 2 })
 
-	-- Middle click shows a preview of the space in a popup
-	local preview = sbar.add("item", {
-		position = "popup." .. space.name,
-		background = {
-			padding_left = settings.popup_border_width,
-			drawing = true,
-			image = {
-				corner_radius = settings.bar_corner_radius,
-				scale = 0.15,
-			},
-		},
-	})
+	spaces[tostring(i)] = { item = space, gap = gap }
+end
 
-	space:subscribe("space_change", function(env)
-		local selected = env.SELECTED == "true"
-		space:set({
-			icon = { highlight = selected },
-			label = { highlight = selected },
-			background = {
-				color = selected and colors.spaces.active or colors.spaces.inactive,
-			},
-		})
-	end)
+local FORMAT = "%{workspace}|%{monitor-appkit-nsscreen-screens-id}|%{workspace-is-visible}"
 
-	space:subscribe("mouse.clicked", function(env)
-		if env.BUTTON == "other" then
-			preview:set({ background = { image = "space." .. env.SID } })
-			space:set({ popup = { drawing = "toggle" } })
-		else
-			local op = (env.BUTTON == "right") and "--destroy" or "--focus"
-			sbar.exec("yabai -m space " .. op .. " " .. env.SID)
+-- Asks AeroSpace where every workspace is rather than trusting the event's
+-- payload: focusing a workspace on another display moves focus there and
+-- leaves the previous workspace visible.
+local function update()
+	sbar.exec("aerospace list-workspaces --all --format '" .. FORMAT .. "'", function(output)
+		for line in output:gmatch("[^\r\n]+") do
+			local name, display, visible = line:match("^(.-)|(%d+)|(%a+)$")
+			local space = spaces[name]
+			if space then
+				local selected = visible == "true"
+				space.item:set({
+					display = tonumber(display),
+					label = { highlight = selected },
+					background = {
+						color = selected and colors.spaces.active or colors.spaces.inactive,
+					},
+				})
+				space.gap:set({ display = tonumber(display) })
+			end
 		end
 	end)
 end
 
-for i = 1, 9 do
-	add_space(i)
-end
+-- Hidden item that only listens for events
+local watcher = sbar.add("item", "spaces.watcher", { drawing = false, updates = true })
+watcher:subscribe({ "forced", "aerospace_workspace_change", "display_change", "system_woke" }, update)
 
 ui.spacer("spaces.spacer")
