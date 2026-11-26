@@ -85,6 +85,10 @@ plugins=(
           autoswitch_virtualenv
         )
 
+# Completions shipped by Homebrew formulae (docker, colima, ...); oh-my-zsh
+# runs compinit, so this has to come before it
+fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+
 source $ZSH/oh-my-zsh.sh
 ZSH_THEME_TERM_TITLE_IDLE='%~'
 
@@ -112,8 +116,6 @@ ZSH_THEME_TERM_TITLE_IDLE='%~'
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-
-export PATH="$PATH:$HOME/.docker/bin"
 
 export LDFLAGS="-L/opt/homebrew/opt/libpq/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/libpq/include"

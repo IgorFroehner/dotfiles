@@ -43,6 +43,29 @@ link "$DOTFILES_DIR/mise"      "$HOME/.config/mise"
 link "$DOTFILES_DIR/.zshrc"        "$HOME/.zshrc"
 link "$DOTFILES_DIR/.p10k.zsh"     "$HOME/.p10k.zsh"
 
+# Colima template: only used when a VM is created, so an existing one is untouched
+mkdir -p "$HOME/.colima/_templates"
+link "$DOTFILES_DIR/colima/default.yaml" "$HOME/.colima/_templates/default.yaml"
+
+# Docker CLI config (merged, not linked: `docker login` and colima write to it).
+# Finds Homebrew's compose/buildx plugins and keeps registry logins in the
+# keychain ("desktop" is Docker Desktop's helper, gone once it's uninstalled).
+echo "==> Docker CLI config"
+docker_config="$HOME/.docker/config.json"
+if command -v jq &>/dev/null; then
+  mkdir -p "$HOME/.docker"
+  [ -f "$docker_config" ] || echo '{}' > "$docker_config"
+  tmp="$(mktemp)"
+  jq --arg dir "/opt/homebrew/lib/docker/cli-plugins" '
+    .cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$dir] | unique)
+    | if .credsStore == null or .credsStore == "desktop" then .credsStore = "osxkeychain" else . end
+  ' "$docker_config" > "$tmp"
+  mv "$tmp" "$docker_config"
+  echo "  [ok] $docker_config"
+else
+  echo "  [skip] jq not installed, run installs first"
+fi
+
 # Secrets file (copy, don't link — it contains local values)
 if [ ! -f "$HOME/.zsh_secrets" ]; then
   cp "$DOTFILES_DIR/.zsh_secrets.example" "$HOME/.zsh_secrets"

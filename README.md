@@ -11,6 +11,7 @@ Main stack:
 - `ghostty` + `zsh` (`oh-my-zsh` + `powerlevel10k`)
 - `zellij` for terminal multiplexing
 - `karabiner-elements` for key remapping
+- `colima` + Docker CLI for containers (no Docker Desktop)
 
 ## What is in this repo
 
@@ -21,6 +22,7 @@ Main stack:
 - `zellij/` - multiplexer config and layouts
 - `karabiner/` - key remapping (Cmd+hjkl → arrows, Caps Lock double-tap → Escape, hold → Hyper)
 - `.zshrc`, `.p10k.zsh` - shell and prompt setup
+- `colima/default.yaml` - Colima VM defaults (CPU, memory, disk, vz + Rosetta, virtiofs)
 
 ## Tools used by the setup/configs
 
@@ -33,9 +35,10 @@ Installed by `installs` and/or referenced by configs:
 - Runtime managers: `mise` (for `nodejs`, `yarn`, `ruby`, etc.)
 - Terminal tools: `ghostty`, `zellij`
 - Key remapping: `karabiner-elements`
+- Containers: `colima`, `docker`, `docker-compose`, `docker-buildx`, `docker-credential-helper`
 
 Also referenced in `.zshrc` as optional/user-local tools:
-- `sdkman`, `bun`, `ghcup`, Docker CLI path, custom local bins
+- `sdkman`, `bun`, `ghcup`, custom local bins
 
 ## Setup
 
@@ -87,6 +90,8 @@ This links:
 - `sketchybar` -> `~/.config/sketchybar`
 - `aerospace` -> `~/.config/aerospace`
 - `.zshrc` and `.p10k.zsh` -> `~/`
+- `colima/default.yaml` -> `~/.colima/_templates/default.yaml`
+- merges Homebrew's plugin dir and the keychain credential helper into `~/.docker/config.json`
 - copies `.zsh_secrets.example` -> `~/.zsh_secrets`
 
 ### 5) Configure secrets/env
@@ -112,6 +117,24 @@ brew services start sketchybar
 It uses its own virtual workspaces rather than macOS Spaces, so keep exactly
 one Space per display: remove any extra ones in Mission Control. A window left
 on another Space makes macOS slide over to it whenever AeroSpace focuses it.
+
+### Docker (Colima)
+
+Colima doesn't start at login: run `colima start` when you need Docker and
+`colima stop` to free its memory. The first start creates the VM from the
+template and downloads its image, which takes a few minutes. To keep it
+running at login instead, use `brew services start colima`.
+
+`colima/default.yaml` only applies when a VM is created. To change an existing
+VM, use `colima start --edit`, or `colima delete && colima start` to rebuild it
+from the template (this wipes images and volumes).
+
+Some tools ignore Docker contexts and expect `/var/run/docker.sock`. Point
+them at `DOCKER_HOST=unix://$HOME/.colima/default/docker.sock`, or link the socket:
+
+```bash
+sudo ln -sf ~/.colima/default/docker.sock /var/run/docker.sock
+```
 
 ### Optional macOS defaults
 

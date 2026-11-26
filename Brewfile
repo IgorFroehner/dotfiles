@@ -34,6 +34,13 @@ brew "fd"
 # Terminal multiplexer
 brew "zellij"
 
+# Containers: Docker CLI on a Colima VM (no Docker Desktop)
+brew "colima"
+brew "docker"
+brew "docker-compose"
+brew "docker-buildx"
+brew "docker-credential-helper"
+
 # Casks
 cask "nikitabobko/tap/aerospace"
 cask "ghostty"
