@@ -105,19 +105,6 @@ ZSH_THEME_TERM_TITLE_IDLE='%~'
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-alias zshconfig="nvim ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-alias berspec="bundle exec rspec"
-alias besidekiq="bundle exec sidekiq"
-alias berails="bundle exec rails"
-
 # Source secrets if available
 [ -f "$HOME/.zsh_secrets" ] && source "$HOME/.zsh_secrets"
 
@@ -174,14 +161,27 @@ eval "$(mise activate zsh)"
 
 # zoxide
 eval "$(zoxide init zsh)"
+alias cd="z"
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
+
+alias zshconfig="nvim ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+alias berspec="bundle exec rspec"
+alias besidekiq="bundle exec sidekiq"
+alias berails="bundle exec rails"
 
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
 alias claude-personal="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
 alias cw="claude-work"
 alias cper="claude-personal"
+
+alias c="clear"
+alias ll="ls -alF"
+
+alias los=~/jetrockets/los/bin/los
 
 # `zj [layout]` opens a zellij session with ~/.config/zellij/layouts/<layout>.kdl
 # (default: the zjstatus bar with one terminal tab; `zj nvim` for nvim + terminal).
