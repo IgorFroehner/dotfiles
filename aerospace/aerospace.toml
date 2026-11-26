@@ -121,10 +121,6 @@ ctrl-alt-cmd-shift-7 = 'move-node-to-workspace 7'
 ctrl-alt-cmd-shift-8 = 'move-node-to-workspace 8'
 ctrl-alt-cmd-shift-9 = 'move-node-to-workspace 9'
 
-# Pause / resume window management (was stop / start the yabai service)
-ctrl-alt-q = 'enable off'
-ctrl-alt-s = 'enable on'
-
 # Floating windows (yabai manage=off). The first matching rule wins.
 
 [[on-window-detected]]

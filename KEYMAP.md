@@ -71,7 +71,6 @@ focus to the second display.
 | `Hyper+r` | flip orientation | rotate space 270° |
 | `Hyper+b` | tiles side by side; again flips to rows | bsp layout |
 | `Hyper+s` | vertical accordion; again flips to horizontal | stack layout |
-| `Ctrl+Alt+q` / `s` | pause / resume AeroSpace | stop / start yabai service |
 
 Dropped, with no AeroSpace equivalent: `Hyper+y` / `x` (mirror),
 `Hyper+Shift+space` (float the whole space) and `Alt` + mouse drag
